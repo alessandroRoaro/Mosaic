@@ -31,8 +31,8 @@ public class MosaicPane<T extends Node> extends Region {
 	private MosaicEngine<T> layoutEngine;
 	private Surface<T> surface;
 	private Group content;
-	private double elementMinWidth;
-	private double elementMinHeight;
+	private double nodeMinWidth;
+	private double nodeMinHeight;
 	
 	/**
 	 * Constructs a new {@code MosaicPane}
@@ -110,7 +110,7 @@ public class MosaicPane<T extends Node> extends Region {
 	 * @param percentHeight		the percentage of the overall height the object should occupy.
 	 */
 	public void add(T t, double percentX, double percentY, double percentWidth, double percentHeight) {
-		surface.addRelative("", t, percentX, percentY, percentWidth, percentHeight, getElementMinWidth(), Double.MAX_VALUE, getElementMinHeight(), Double.MAX_VALUE);
+		surface.addRelative("", t, percentX, percentY, percentWidth, percentHeight, getNodeMinWidth(), Double.MAX_VALUE, getNodeMinHeight(), Double.MAX_VALUE);
 		content.getChildren().add(t);
 	}
 	
@@ -126,7 +126,7 @@ public class MosaicPane<T extends Node> extends Region {
 	 * @param percentHeight		the percentage of the overall height the object should occupy.
 	 */
 	public void add(T t, String id, double percentX, double percentY, double percentWidth, double percentHeight) {
-		surface.addRelative(id, t, percentX, percentY, percentWidth, percentHeight, getElementMinWidth(), Double.MAX_VALUE, getElementMinHeight(), Double.MAX_VALUE);
+		surface.addRelative(id, t, percentX, percentY, percentWidth, percentHeight, getNodeMinWidth(), Double.MAX_VALUE, getNodeMinHeight(), Double.MAX_VALUE);
 		content.getChildren().add(t);
 	}
 	
@@ -198,22 +198,22 @@ public class MosaicPane<T extends Node> extends Region {
 	}
 
 
-	public void setElementMinWidth (double width) {
-		this.elementMinWidth = width;
+	public void setNodeMinWidth(double width) {
+		this.nodeMinWidth = width;
 	}
 
 
-	public double getElementMinWidth () {
-		return elementMinWidth;
+	public double getNodeMinWidth() {
+		return nodeMinWidth;
 	}
 
 
-	public void setElementMinHeight (double height) {
-		this.elementMinHeight = height;
+	public void setNodeMinHeight(double height) {
+		this.nodeMinHeight = height;
 	}
 
 
-	public double getElementMinHeight () {
-		return elementMinHeight;
+	public double getNodeMinHeight() {
+		return nodeMinHeight;
 	}
 }

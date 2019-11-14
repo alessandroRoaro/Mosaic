@@ -26,21 +26,21 @@ public class Log {
 
 	public static void d (String msg) {
 		if (logLevel == LogLevel.DEBUG.getLevel()) {
-			Log.d(msg);
+			System.out.println(msg);
 		}
 	}
 	
 	
 	public static void v (String msg) {
 		if (logLevel <= LogLevel.VERBOSE.getLevel()) {
-			Log.d(msg);
+			System.out.println(msg);
 		}
 	}
 	
 	
 	public static void i (String msg) {
 		if (logLevel <= LogLevel.INFO.getLevel()) {
-			Log.d(msg);
+			System.out.println(msg);
 		}
 	}
 

@@ -36,8 +36,8 @@ public class MosaicPaneRefImpl extends Application {
 
 		Log.d("model.length = " + model.length);
 		MosaicPane<Node> mosaicPane = new MosaicPane<Node>();
-		mosaicPane.setElementMinHeight(100);
-		mosaicPane.setElementMinWidth(300);
+		mosaicPane.setNodeMinHeight(100);
+		mosaicPane.setNodeMinWidth(300);
 		
 		int i = 0;
 		for(String def : model) {

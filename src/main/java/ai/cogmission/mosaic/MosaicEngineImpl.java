@@ -1300,16 +1300,33 @@ class MosaicEngineImpl<T> implements MosaicEngine<T> {
     
     void testDropElement(SurfacePriviledged<T> surface, LayoutImpl<T> interimLayout, Node<T> source, Node<T> target, Position p) {
     	Rectangle2D.Double[] bounds = getAddBounds(surface.getSnapshot().getNode(source.stringID), interimLayout.getNode(target.stringID), p, surface.getDividerSize());
-    	if(bounds[TARGET_IDX] != null) {
-    		source.r.setFrame(bounds[SOURCE_IDX]);
-    		target.r.setFrame(bounds[TARGET_IDX]);
+		Rectangle2D.Double sourceBounds = bounds[SOURCE_IDX];
+		Rectangle2D.Double targetBounds = bounds[TARGET_IDX];
+
+    	if(targetBounds != null) {
+    		// check that the bounds respect the min width and height of the nodes
+			if (sourceBounds.width < source.getMinWidth() || sourceBounds.height < source.getMinHeight() || targetBounds.width < target.getMinWidth() || targetBounds.height < target.getMinHeight()) {
+				Log.d("Rejecting drop because too small");
+				return;
+			}
+
+    		source.r.setFrame(sourceBounds);
+    		target.r.setFrame(targetBounds);
+    		Log.d("Source frame: " + sourceBounds);
+    		Log.d("Target frame: " + targetBounds);
+    		Log.d("______________________");
     		
     		source.force(surface, ChangeType.RELOCATE_DRAG_TARGET);
     		source.force(surface, ChangeType.RESIZE_DRAG_TARGET);
     		target.force(surface, ChangeType.ANIMATE_RESIZE_RELOCATE);
     		
     		surface.setHasValidDrop(true);
+
+    		Log.d("drop accepted");
     	}
+    	else {
+    		Log.d("drop rejected");
+		}
     }
     
     void rejectDropElement(SurfacePriviledged<T> surface, LayoutImpl<T> interimLayout, Node<T> source, Node<T> target) {
@@ -1891,7 +1908,8 @@ class MosaicEngineImpl<T> implements MosaicEngine<T> {
 							
 							Position p = getDragQuadrant(removalSnapshot.getNode(currentDragOver.stringID).r, x, y);
 							lastQuadrant = p;
-							if(p != null) {
+							if (p != null) {
+								Log.d("Drop quadrant: " + lastQuadrant);
 								testDropElement(surface, removalSnapshot, (Node<T>)selectedElement, currentDragOver, p);
 							}else{
 								rejectDropElement(surface, removalSnapshot, (Node<T>)selectedElement, currentDragOver);
