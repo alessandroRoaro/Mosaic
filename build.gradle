@@ -1,0 +1,31 @@
+apply plugin: 'java'
+
+group = 'ai.cogmission.mosaic'
+version = '0.10'
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+jar {
+    manifest {
+        attributes 'Implementation-Title': 'Mosaic', 'Implementation-Version': version
+    }
+}
+
+// In this section you declare where to find the dependencies of your project
+repositories {
+    // Use 'maven central' for resolving your dependencies.
+    // You can declare any Maven/Ivy/file repository here.
+    mavenCentral()
+}
+
+dependencies {
+    compile fileTree(dir: 'lib', include: '*.jar')
+    compile group: 'org.apache.pivot', name: 'pivot-core', version:'2.0.4'
+    compile group: 'org.apache.pivot', name: 'pivot-wtk', version:'2.0.4'
+    compile group: 'org.apache.pivot', name: 'pivot-wtk-terra', version:'2.0.4'
+    compile group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version:'2.4.4'
+    compile group: 'com.fasterxml.jackson.core', name: 'jackson-core', version:'2.4.4'
+    compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version:'2.4.4'
+    testCompile group: 'junit', name: 'junit', version:'4.11'
+}
