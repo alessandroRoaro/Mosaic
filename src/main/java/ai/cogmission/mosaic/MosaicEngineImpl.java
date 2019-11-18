@@ -1772,7 +1772,7 @@ class MosaicEngineImpl<T> implements MosaicEngine<T> {
 	        return Math.sqrt(x1 * x1 + y1 * y1);
 		}
 		
-		Corner withinCornerRadius(Node<T> n, double x, double y) {
+		Corner withinCornerRadius(Element<T> n, double x, double y) {
 			double nx = n.r.x;
 			double ny = n.r.y;
 			double nMaxX = n.r.getMaxX();
@@ -1868,8 +1868,6 @@ class MosaicEngineImpl<T> implements MosaicEngine<T> {
 				dragXOffset = x - selectedElement.r.x;
 				dragYOffset = y - selectedElement.r.y;
 			}
-			
-			
 		}
 		
 		private Position getDragQuadrant(Rectangle2D.Double r, double x, double y) {
@@ -1987,30 +1985,58 @@ class MosaicEngineImpl<T> implements MosaicEngine<T> {
 			}
 		}
 
-		void mouseMoved (List<Element<T>> elems) {
-			boolean hasDivider = false;
-			Divider divider = null;
+		void mouseMoved (List<Element<T>> elems, double x, double y) {
+			Cursor cursor = Cursor.DEFAULT;
 
-			for (Element e : elems) {
-				if (e instanceof Divider) {
-					hasDivider = true;
-					divider = (Divider) e;
-					break;
+			if (elems.size() == 1) {
+				if (elems.get(0) instanceof Divider) {
+					Divider div = (Divider) elems.get(0);
+
+					if (div.isVertical) {
+						cursor = Cursor.E_RESIZE;
+					}
+					else {
+						cursor = Cursor.N_RESIZE;
+					}
 				}
 			}
+			else if (elems.size() == 2) {
+				if (elems.get(0) instanceof Divider && elems.get(1) instanceof Divider) {
+					Corner corner = null;
 
-			Cursor cursor;
+					outer: for (Element e : elems) {
+						Divider div = (Divider) e;
 
-			if (hasDivider) {
-				if (divider.isVertical) {
-					cursor = Cursor.E_RESIZE;
+						for (Node n : (ArrayList<Node>) div.nextNodes) {
+							corner = withinCornerRadius(n, x, y);
+
+							if (corner != null) {
+								break outer;
+							}
+						}
+
+						for (Node n : (ArrayList<Node>) div.prevNodes) {
+							corner = withinCornerRadius(n, x, y);
+
+							if (corner != null) {
+								break outer;
+							}
+						}
+					}
+
+					if (corner != null) {
+						switch (corner) {
+							case NE:
+							case SW:
+								cursor = Cursor.NE_RESIZE;
+								break;
+							case NW:
+							case SE:
+								cursor = Cursor.NW_RESIZE;
+								break;
+						}
+					}
 				}
-				else {
-					cursor = Cursor.N_RESIZE;
-				}
-			}
-			else {
-				cursor = Cursor.DEFAULT;
 			}
 
 			mosaicPane.getScene().setCursor(cursor);

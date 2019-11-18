@@ -3,6 +3,7 @@ Forked from https://github.com/fxpresso/Mosaic
 Improvements:
 - Added possibility to set a global minimum width and height for nodes in MosaicPane
 - A drop is rejected when it doesn't respect the minimum width and height of the nodes
+- Added cursors for dragging and resizing
 
 
 # Mosaic

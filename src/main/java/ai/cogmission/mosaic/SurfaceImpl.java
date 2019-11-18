@@ -1382,6 +1382,6 @@ public class SurfaceImpl<T> extends SurfacePriviledged<T> {
 		if (isDragging) return;
 
 		List<Element<T>> elems = inputManager.findElements(x, y);
-		inputManager.mouseMoved(elems);
+		inputManager.mouseMoved(elems, x, y);
 	}
 }
