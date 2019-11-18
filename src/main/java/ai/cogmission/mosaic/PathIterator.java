@@ -40,14 +40,18 @@ class PathIterator<T> implements PathVisitable<T> {
      */
     public PathIterator(LayoutImpl<T> l, PathIterator<T> p) {
     	this();
-    	
-    	for(HorizontalPath path : p.horizontalPaths) {
-    		horizontalPaths.add(path.getCopy(l));
-    	}
-    	
-    	for(VerticalPath path : p.verticalPaths) {
-    		verticalPaths.add(path.getCopy(l));
-    	}
+
+    	if (p.horizontalPaths != null) {
+            for(HorizontalPath path : p.horizontalPaths) {
+                horizontalPaths.add(path.getCopy(l));
+            }
+        }
+
+    	if (p.verticalPaths != null) {
+            for(VerticalPath path : p.verticalPaths) {
+                verticalPaths.add(path.getCopy(l));
+            }
+        }
     }
     
     /**
