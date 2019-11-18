@@ -1,6 +1,6 @@
 package ai.cogmission.mosaic;
 
-import ai.cogmission.mosaic.refimpl.javafx.MosaicPane;
+import ai.cogmission.mosaic.refimpl.MosaicPane;
 
 public interface EngineBuilder<T> {
 	/**

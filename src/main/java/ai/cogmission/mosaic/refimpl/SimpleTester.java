@@ -1,4 +1,4 @@
-package ai.cogmission.mosaic.refimpl.javafx;
+package ai.cogmission.mosaic.refimpl;
 
 import ai.cogmission.mosaic.Log;
 

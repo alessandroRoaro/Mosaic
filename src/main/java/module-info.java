@@ -12,10 +12,8 @@ module Mosaic {
 	requires jackson.core;
     requires java.desktop;
 
-    opens ai.cogmission.mosaic.refimpl.javafx to javafx.graphics;
-//	opens apro2.canbustool to javafx.graphics;
-//    opens apro2.canbustool.ui.controller to javafx.graphics, javafx.fxml;
-//    opens apro2.canbustool.ui.view to javafx.graphics, javafx.fxml;
-//    opens apro2.canbustool.test to javafx.graphics;
-//    opens apro2.canbustool.model to javafx.base;
+    opens ai.cogmission.mosaic.refimpl to javafx.graphics;
+
+    exports ai.cogmission.mosaic;
+    exports ai.cogmission.mosaic.refimpl;
 }

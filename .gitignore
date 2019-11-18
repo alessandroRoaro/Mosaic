@@ -3,6 +3,7 @@
 /bin
 /build
 /out
+out
 /doc
 .idea/
 *.iml

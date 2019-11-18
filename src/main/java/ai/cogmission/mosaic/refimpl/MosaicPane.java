@@ -1,4 +1,4 @@
-package ai.cogmission.mosaic.refimpl.javafx;
+package ai.cogmission.mosaic.refimpl;
 
 import java.awt.geom.Rectangle2D;
 

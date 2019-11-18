@@ -44,8 +44,8 @@ Easy peasy!
 1. Fork or clone repo
 2. Setup in the IDE of your choice
 3. Run the:
-  * ai.cogmission.mosaic.refimpl.javafx.MosaicPaneRefImpl.java
-  * ai.cogmission.mosaic.refimpl.javafx.SimpleTester.java
+  * ai.cogmission.mosaic.refimpl.MosaicPaneRefImpl.java
+  * ai.cogmission.mosaic.refimpl.SimpleTester.java
   * -- or --
   * ai.cogmission.mosaic.refimpl.pivot.MosaicPaneRefImpl.java
   * ai.cogmission.mosaic.refimpl.pivot.SimpleTester.java
@@ -55,7 +55,7 @@ Easy peasy!
 
 ### To Implement yourself: (in the "src/main/java" source tree)
 
-Take a look at the  ai.cogmission.mosaic.refimpl.javafx.MosaicPane.java or  ai.cogmission.mosaic.refimpl.pivot.MosaicPane.java file for reference on how to implement your own container that can be managed by the Mosaic Engine.
+Take a look at the  ai.cogmission.mosaic.refimpl.MosaicPane.java or  ai.cogmission.mosaic.refimpl.pivot.MosaicPane.java file for reference on how to implement your own container that can be managed by the Mosaic Engine.
 
 **Better instructions are on the way... (we need your help!)**
 
