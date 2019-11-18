@@ -476,6 +476,8 @@ public interface Surface<T> {
 	 * User must call this method to receive layout events relevant to mouse releases.
 	 */
 	public void mouseReleased();
+
+	public void mouseMoved(double x, double y);
 	
 	/**
 	 * Returns a serialized form of this {@code Surface} in

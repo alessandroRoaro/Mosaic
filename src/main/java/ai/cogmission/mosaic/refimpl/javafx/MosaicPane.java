@@ -11,6 +11,7 @@ import ai.cogmission.mosaic.SurfaceListener;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.EventHandler;
+import javafx.event.EventType;
 import javafx.geometry.Bounds;
 import javafx.scene.Group;
 import javafx.scene.Node;
@@ -18,6 +19,7 @@ import javafx.scene.effect.DropShadow;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Region;
 import javafx.scene.paint.Color;
+import org.apache.pivot.wtk.Mouse;
 
 /**
  * An implementation of a container object which is meant to be used
@@ -55,7 +57,7 @@ public class MosaicPane<T extends Node> extends Region {
 	 */
 	public MosaicPane(MosaicEngine<T> engine, Surface<T> surface, Group group) {
 		if(engine == null || surface == null) {
-			this.layoutEngine = new MosaicEngineBuilder<T>().build();
+			this.layoutEngine = new MosaicEngineBuilder<T>().build(this);
 			
 			MosaicSurfaceBuilder<T> builder = new MosaicSurfaceBuilder<T>();
 			this.surface = builder
@@ -76,28 +78,27 @@ public class MosaicPane<T extends Node> extends Region {
 			this.content = group;
 		}
 		
-		layoutBoundsProperty().addListener(new ChangeListener<Bounds>() {
-        	@Override
-			public void changed(ObservableValue<? extends Bounds> arg0, Bounds arg1, Bounds arg2) {
-        		if(arg2.getWidth() == 0 || arg2.getHeight() == 0) return;
-				MosaicPane.this.surface.setArea(new Rectangle2D.Double(0, 0, arg2.getWidth(), arg2.getHeight()));
-				MosaicPane.this.surface.requestLayout();
-			}
-        	
-        });
+		layoutBoundsProperty().addListener((arg0, arg1, arg2) -> {
+			if(arg2.getWidth() == 0 || arg2.getHeight() == 0) return;
+			this.surface.setArea(new Rectangle2D.Double(0, 0, arg2.getWidth(), arg2.getHeight()));
+			this.surface.requestLayout();
+		});
         
-        addEventHandler(MouseEvent.ANY, new EventHandler<MouseEvent>() {
-        	@Override
-			public void handle(MouseEvent evt) {
-        		if(evt.getEventType().equals(MouseEvent.MOUSE_PRESSED)) {
-        			MosaicPane.this.surface.mousePressed(evt.getX(), evt.getY());
-				}else if(evt.getEventType().equals(MouseEvent.MOUSE_DRAGGED)) {
-					MosaicPane.this.surface.mouseDragged(evt.getX(), evt.getY());
-				}else if(evt.getEventType().equals(MouseEvent.MOUSE_RELEASED)) {
-					MosaicPane.this.surface.mouseReleased();
-				}
+        addEventHandler(MouseEvent.ANY, evt -> {
+			EventType type = evt.getEventType();
+			if(type == MouseEvent.MOUSE_PRESSED) {
+				this.surface.mousePressed(evt.getX(), evt.getY());
 			}
-        });
+			else if(type == MouseEvent.MOUSE_DRAGGED) {
+				this.surface.mouseDragged(evt.getX(), evt.getY());
+			}
+			else if(type == MouseEvent.MOUSE_RELEASED) {
+				this.surface.mouseReleased();
+			}
+			else if (type == MouseEvent.MOUSE_MOVED) {
+				this.surface.mouseMoved(evt.getX(), evt.getY());
+			}
+		});
 	}
 	
 	/**

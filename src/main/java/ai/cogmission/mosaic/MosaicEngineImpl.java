@@ -1,5 +1,8 @@
 package ai.cogmission.mosaic;
 
+import ai.cogmission.mosaic.refimpl.javafx.MosaicPane;
+import javafx.scene.Cursor;
+
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
@@ -69,6 +72,8 @@ class MosaicEngineImpl<T> implements MosaicEngine<T> {
 	
 	/** List of Surfaces */
 	private List<SurfacePriviledged<T>> surfaces = new ArrayList<SurfacePriviledged<T>>();
+
+	private MosaicPane mosaicPane;
 	
 	/** Map of registered Surfaces to their respective visitation tools */
 	private Map<SurfacePriviledged<T>, PathVisitor<T>[]> visitors = new HashMap<SurfacePriviledged<T>, PathVisitor<T>[]>();
@@ -82,7 +87,9 @@ class MosaicEngineImpl<T> implements MosaicEngine<T> {
 	 *  
 	 *  @see EngineBuilder, MosaicEngineBuilder
 	 */
-	MosaicEngineImpl() {}
+	MosaicEngineImpl (MosaicPane mosaicPane) {
+		this.mosaicPane = mosaicPane;
+	}
 	
 	/**
 	 * Sets the area/bounds being managed.
@@ -1298,7 +1305,7 @@ class MosaicEngineImpl<T> implements MosaicEngine<T> {
 		}
     }
     
-    void testDropElement(SurfacePriviledged<T> surface, LayoutImpl<T> interimLayout, Node<T> source, Node<T> target, Position p) {
+    boolean testDropElement(SurfacePriviledged<T> surface, LayoutImpl<T> interimLayout, Node<T> source, Node<T> target, Position p) {
     	Rectangle2D.Double[] bounds = getAddBounds(surface.getSnapshot().getNode(source.stringID), interimLayout.getNode(target.stringID), p, surface.getDividerSize());
 		Rectangle2D.Double sourceBounds = bounds[SOURCE_IDX];
 		Rectangle2D.Double targetBounds = bounds[TARGET_IDX];
@@ -1306,8 +1313,8 @@ class MosaicEngineImpl<T> implements MosaicEngine<T> {
     	if(targetBounds != null) {
     		// check that the bounds respect the min width and height of the nodes
 			if (sourceBounds.width < source.getMinWidth() || sourceBounds.height < source.getMinHeight() || targetBounds.width < target.getMinWidth() || targetBounds.height < target.getMinHeight()) {
-				Log.d("Rejecting drop because too small");
-				return;
+				Log.d("Rejecting drop because new bounds are too small");
+				return false;
 			}
 
     		source.r.setFrame(sourceBounds);
@@ -1322,10 +1329,13 @@ class MosaicEngineImpl<T> implements MosaicEngine<T> {
     		
     		surface.setHasValidDrop(true);
 
-    		Log.d("drop accepted");
+    		Log.d("Drop accepted");
+
+    		return true;
     	}
     	else {
-    		Log.d("drop rejected");
+    		Log.d("Drop rejected");
+    		return false;
 		}
     }
     
@@ -1341,6 +1351,8 @@ class MosaicEngineImpl<T> implements MosaicEngine<T> {
     	surface.setHasValidDrop(false);
     	
     	for(Node<T> n : surface.getNodeList()) {
+    		if (n.r == null) continue;
+
     		n.r.setFrame(interimLayout.getNode(n.stringID).r);
 	    	n.force(surface, ChangeType.RESIZE_RELOCATE);
     	}
@@ -1925,6 +1937,8 @@ class MosaicEngineImpl<T> implements MosaicEngine<T> {
 					}
 					
 					isDraggingNode = true;
+					mosaicPane.getScene().setCursor(Cursor.CLOSED_HAND);
+
 					break;
 				}
 				case DIVIDER: {
@@ -1940,7 +1954,7 @@ class MosaicEngineImpl<T> implements MosaicEngine<T> {
 					if(altElement != null) {
 						dragPoint = snapDragPoint(surface, (Divider<T>)altElement, dragPoint, maxMoveBounds);
 					}
-					
+
 					moveDividerWithinMinMax(surface, (Divider<T>)selectedElement, (Divider<T>)altElement, maxMoveBounds, dragPoint, dividerSize);
 					adjustWeights(surface);
 					break;
@@ -1962,14 +1976,44 @@ class MosaicEngineImpl<T> implements MosaicEngine<T> {
 							cancelDropElement(surface, (Node<T>)selectedElement);
 						}
 					}
+					mosaicPane.getScene().setCursor(Cursor.DEFAULT);
 					surface.setLocked(false);
 					break;
 				}
 				case DIVIDER: {
-					Log.d("releaseElement: Divider");
+                    Log.d("releaseElement: Divider");
 					break;
 				}
 			}
+		}
+
+		void mouseMoved (List<Element<T>> elems) {
+			boolean hasDivider = false;
+			Divider divider = null;
+
+			for (Element e : elems) {
+				if (e instanceof Divider) {
+					hasDivider = true;
+					divider = (Divider) e;
+					break;
+				}
+			}
+
+			Cursor cursor;
+
+			if (hasDivider) {
+				if (divider.isVertical) {
+					cursor = Cursor.E_RESIZE;
+				}
+				else {
+					cursor = Cursor.N_RESIZE;
+				}
+			}
+			else {
+				cursor = Cursor.DEFAULT;
+			}
+
+			mosaicPane.getScene().setCursor(cursor);
 		}
 	}
 }
