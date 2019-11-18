@@ -11,8 +11,6 @@ module Mosaic {
 	requires jackson.databind;
 	requires jackson.core;
     requires java.desktop;
-    requires pivot.wtk;
-    requires pivot.core;
 
     opens ai.cogmission.mosaic.refimpl.javafx to javafx.graphics;
 //	opens apro2.canbustool to javafx.graphics;

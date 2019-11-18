@@ -8,18 +8,13 @@ import ai.cogmission.mosaic.MosaicEngineBuilder;
 import ai.cogmission.mosaic.MosaicSurfaceBuilder;
 import ai.cogmission.mosaic.Surface;
 import ai.cogmission.mosaic.SurfaceListener;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
-import javafx.event.EventHandler;
 import javafx.event.EventType;
-import javafx.geometry.Bounds;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Region;
 import javafx.scene.paint.Color;
-import org.apache.pivot.wtk.Mouse;
 
 /**
  * An implementation of a container object which is meant to be used
