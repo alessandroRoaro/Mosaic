@@ -1153,6 +1153,11 @@ public class SurfaceImpl<T> extends SurfacePriviledged<T> {
 	public boolean getIsInit() {
 		return this.isInit;
 	}
+
+	@Override
+	public boolean getIsSetup () {
+		return inputManager != null;
+	}
 	
 	/**
 	 * Sets the flag indicating whether a drag operation is occurring.

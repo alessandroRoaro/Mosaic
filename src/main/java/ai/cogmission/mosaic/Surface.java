@@ -258,6 +258,12 @@ public interface Surface<T> {
 	 * @return
 	 */
 	boolean getIsInit();
+
+	/**
+	 * Returns true if the surface engine is setup.
+	 * @return
+	 */
+	boolean getIsSetup();
 	
 	/**
 	 * 
