@@ -100,6 +100,10 @@ public class SurfaceImpl<T> extends SurfacePriviledged<T> {
     
     @JsonIgnore
     private String nodeCursor;
+
+    /** Dragging is disabled by default. It gets automatically enabled when two or more nodes are added to the mosaic. */
+    private boolean isDragEnabled = false;
+
     
     /**
 	 * Stores change listeners and notifies them when a 
@@ -244,7 +248,7 @@ public class SurfaceImpl<T> extends SurfacePriviledged<T> {
 		
 		return si;
 	}
-	
+
 	/**
 	 * Returns a deep copy snapshot of this {@code Surface}'s 
 	 * Layout in its current state.
@@ -392,6 +396,11 @@ public class SurfaceImpl<T> extends SurfacePriviledged<T> {
 	@Override
 	public void setHasValidDrop(boolean b) {
 		this.hasValidDrop = b;
+	}
+
+	@Override
+	public void setDragEnabled(boolean isEnabled) {
+		isDragEnabled = isEnabled;
 	}
 	
 	void snapshotInterimLayout() {
@@ -1364,8 +1373,10 @@ public class SurfaceImpl<T> extends SurfacePriviledged<T> {
 	 */
 	@Override
 	public void mouseDragged(double x, double y) {
-		isDragging = true;
-		inputManager.dragElement(this, x, y);
+		if (isDragEnabled) {
+			isDragging = true;
+			inputManager.dragElement(this, x, y);
+		}
 	}
 	
 	/**
@@ -1379,6 +1390,11 @@ public class SurfaceImpl<T> extends SurfacePriviledged<T> {
 
 	@Override
 	public void mouseMoved (double x, double y) {
+		if(inputManager == null) {
+			throw new IllegalStateException("Surface.mousePressed cannot be called before " +
+					"adding the surface to a MosaicEngine");
+		}
+
 		if (isDragging) return;
 
 		List<Element<T>> elems = inputManager.findElements(x, y);

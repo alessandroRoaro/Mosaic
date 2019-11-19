@@ -1888,14 +1888,13 @@ class MosaicEngineImpl<T> implements MosaicEngine<T> {
 		
 		Node<T> getDragOverNode(SurfacePriviledged<T> surface, LayoutImpl<T> layout, double x, double y) {
 			Node<T> retVal = null;
-			if(retVal == null) {
-				for(Node<T> n : layout.getNodeList()) {
-					if(n.r.contains(x, y)) {
-						retVal = surface.getNode(n.stringID);
-						break;
-					}
+			for (Node<T> n : layout.getNodeList()) {
+				if (n.r.contains(x, y)) {
+					retVal = surface.getNode(n.stringID);
+					break;
 				}
 			}
+
 			return retVal;
 		}
 		

@@ -6,12 +6,12 @@ import java.util.List;
 
 
 public interface Surface<T> {
-	public void cursorLeft();//37
-	public void cursorUp();//38
-	public void cursorRight();//39
-	public void cursorDown();//40
-	public String getCursor();
-	public void setCursor(String id);
+	void cursorLeft();//37
+	void cursorUp();//38
+	void cursorRight();//39
+	void cursorDown();//40
+	String getCursor();
+	void setCursor(String id);
 	
 	/**
 	 * Returns a flag indicating that a recent Move/Drop operation
@@ -21,7 +21,7 @@ public interface Surface<T> {
 	 * 
 	 * @return	true if valid drop exists, false if not.
 	 */
-	public boolean hasValidDrop();
+	boolean hasValidDrop();
 	
 	/**
 	 * Sets the flag indicating whether a recent Move/Drop operation
@@ -29,7 +29,7 @@ public interface Surface<T> {
 	 * 
 	 * @param b		the flag to set.
 	 */
-	public void setHasValidDrop(boolean b);
+	void setHasValidDrop(boolean b);
 	
 	/**
 	 * Adds an implementation of the {@link RelativePosition} interface. 
@@ -38,14 +38,14 @@ public interface Surface<T> {
 	 * @param relativePosition	an implementation of the {@link RelativePosition} interface.
 	 * @return	this {@code Surface}
 	 */
-	public Surface<T> add(String id, T t);
+	Surface<T> add(String id, T t);
 	
 	/**
 	 * Removes the Object <T> from this Surface.
 	 * 
 	 * @param t	the Object to remove
 	 */
-	public void requestRemove(T t);
+	void requestRemove(T t);
 	
 	/**
 	 * Removes the Object that was added with the specified id, from this Surface.
@@ -57,7 +57,7 @@ public interface Surface<T> {
 	 * 
 	 * @param id	the id of the Object to remove.
 	 */
-	public void requestRemove(String id);
+	void requestRemove(String id);
 	
 	/**
 	 * Begins an "Add" operation which will be "answered" as a response
@@ -68,7 +68,7 @@ public interface Surface<T> {
 	 * this allows the client to be totally passive with regard to necessary changes to affect
 	 * the change in its layout.
 	 */
-	public void requestAdd(T source, String sourceID, T target, Position p);
+	void requestAdd(T source, String sourceID, T target, Position p);
 	
 	/**
 	 * Moves the specified source object to the specified {@link Position} relative to
@@ -90,7 +90,7 @@ public interface Surface<T> {
 	 * @see #requestMoveReject(Object)
 	 * @see #requestMoveCancel(Object)
 	 */
-	public void requestMove(T source, T target, Position p);
+	void requestMove(T source, T target, Position p);
 	
 	/**
 	 * Stage one of an incremental programmatic move of an object from one location in 
@@ -116,7 +116,7 @@ public interface Surface<T> {
 	 * @see #requestMoveReject(Object)
 	 * @see #requestMoveCancel(Object)
 	 */
-	public void requestMoveBegin(T source);
+	void requestMoveBegin(T source);
 	/**
 	 * Stage two of an incremental programmatic move of an object from one location in
 	 * the layout to another. This will signal the engine to respond with a test drop 
@@ -133,7 +133,7 @@ public interface Surface<T> {
 	 * @see #requestMoveReject(Object) 
 	 * @see #requestMoveCancel(Object)
 	 */
-	public void requestMoveTest(T source, T target, Position p);
+	void requestMoveTest(T source, T target, Position p);
 	/**
 	 * One of two possible last stages of the move operation. This indicates that the 
 	 * move operation should conclude with the object specified to be position at the
@@ -153,7 +153,7 @@ public interface Surface<T> {
 	 * @see #requestMoveReject(Object)
 	 * @see #requestMoveCancel(Object)
 	 */
-	public void requestMoveCommit(T source, T target, Position position);
+	void requestMoveCommit(T source, T target, Position position);
 	
 	/**
 	 * An interim reset of a "placement" in a test position where the underlying 
@@ -172,7 +172,7 @@ public interface Surface<T> {
 	 * @see #requestMoveCommit(Object, Object, Position)
 	 * @see #requestMoveCancel(Object)
 	 */
-	public void requestMoveReject(T source);
+	void requestMoveReject(T source);
 	
 	/**
 	 * One of two possible last stages of the move operation. This indicates that the 
@@ -192,14 +192,14 @@ public interface Surface<T> {
 	 * @see #requestMoveCommit(Object, Object, Position)
 	 * @see #requestMoveReject(Object)
 	 */
-	public void requestMoveCancel(T source);
+	void requestMoveCancel(T source);
 	
 	/**
 	 * Returns a flag indicating that an uninterruptible operation is underway.
 	 * 
 	 * @return	true if locked, false if not.
 	 */
-	public boolean isLocked();
+	boolean isLocked();
 	
 	/**
 	 * Adds the specified {@link List} of objects to the objects this engine will manage.
@@ -224,7 +224,7 @@ public interface Surface<T> {
 	 * 		the model definitions previously set during the call to {@link #addAll(List)}
 	 * 		<em>-or-</em> not the same as the number of ids.
 	 */
-	public Surface<T> addAll(List<T> tList, List<String> idList);
+	Surface<T> addAll(List<T> tList, List<String> idList);
 	
 	/**
 	 * Adds a {@link LayoutImpl} object to this {@code Surface}. This Surface's
@@ -234,7 +234,7 @@ public interface Surface<T> {
 	 * @param layout	the added {@link Layout}
 	 * @return		this {@code Surface}
 	 */
-	public Surface<T> addLayoutContents(Layout layout);
+	Surface<T> addLayoutContents(Layout layout);
 	
 	/**
 	 * Sets the specified {@link Layout} object on this {@code Surface}. As opposed
@@ -244,20 +244,20 @@ public interface Surface<T> {
 	 * @param l		the Layout to set
 	 * @return		this {@code Surface}.
 	 */
-	public Surface<T> setLayout(Layout l);
+	Surface<T> setLayout(Layout l);
 	
 	/**
 	 * Returns the current {@link Layout} currently set on this {@code Surface}
 	 * 
 	 * @return	the current {@link Layout} currently set on this {@code Surface}
 	 */
-	public Layout getLayout();
+	Layout getLayout();
 	
 	/**
 	 * Returns a flag indicating whether the current state is before the first layout cycle.
 	 * @return
 	 */
-	public boolean getIsInit();
+	boolean getIsInit();
 	
 	/**
 	 * 
@@ -273,7 +273,7 @@ public interface Surface<T> {
 	 * @param maxH
 	 * @return
 	 */
-	public Surface<T> addRelative(String id, T t, double percentX, double percentY, double percentWidth, double percentHeight,
+	Surface<T> addRelative(String id, T t, double percentX, double percentY, double percentWidth, double percentHeight,
 		double minW, double maxW, double minH, double maxH);
 	
 	/**
@@ -290,7 +290,7 @@ public interface Surface<T> {
 	 * @param maxH
 	 * @return
 	 */
-	public Surface<T> addAbsolute(String id, T t, double x, double y, double width, double height,
+	Surface<T> addAbsolute(String id, T t, double x, double y, double width, double height,
 		double minW, double maxW, double minH, double maxH);
 	
 	/**
@@ -302,7 +302,7 @@ public interface Surface<T> {
 	 * 
 	 * @return	this {@code Surface}
 	 */
-	public Surface<T> addChangeListener(SurfaceListener<T> listener);
+	Surface<T> addChangeListener(SurfaceListener<T> listener);
 	
 	/**
 	 * Removes the specified {@link SurfaceListener} from the list of listeners
@@ -310,7 +310,7 @@ public interface Surface<T> {
 	 * 
 	 * @param listener	the {@link SurfaceListener} to remove.
 	 */
-	public void removeChangeListener(SurfaceListener<T> listener);
+	void removeChangeListener(SurfaceListener<T> listener);
 	
 	/**
 	 * Rectangle containing the bounds of this surface.
@@ -320,7 +320,7 @@ public interface Surface<T> {
 	 * 
 	 * @param r	Rectangle containing the bounds of this surface.
 	 */
-	public void setArea(Rectangle2D.Double r);
+	void setArea(Rectangle2D.Double r);
 	
 	/**
 	 * Returns the Rectangle containing the bounds of this surface.
@@ -328,7 +328,7 @@ public interface Surface<T> {
 	 * @return	Rectangle containing the bounds of this surface.
 	 * @see #setArea(java.awt.geom.Rectangle2D.Double)
 	 */
-	public Rectangle2D.Double getArea();
+	Rectangle2D.Double getArea();
 	
 	/**
 	 * Returns a flag indicating whether the offset should
@@ -337,7 +337,7 @@ public interface Surface<T> {
 	 * 
 	 * @return			this {@code Surface}.
 	 */
-	public Surface<T> setUseSurfaceOffset(boolean b);
+	Surface<T> setUseSurfaceOffset(boolean b);
 	
 	/**
 	 * Returns a flag indicating whether the engine is
@@ -346,7 +346,7 @@ public interface Surface<T> {
 	 * 
 	 * @return 	true if yes, false if no
 	 */
-	public boolean getUseSurfaceOffset();
+	boolean getUseSurfaceOffset();
 	
 	/**
 	 * Distance within which a snap to a relevant divider's location or screen
@@ -355,7 +355,7 @@ public interface Surface<T> {
 	 * @param distance		the distance to a given snap location
 	 * @return			this {@code Surface}.
 	 */
-	public Surface<T> setSnapDistance(double distance);
+	Surface<T> setSnapDistance(double distance);
 	
 	/**
 	 * Returns the distance within which a snap to a relevant divider's location or screen
@@ -363,7 +363,7 @@ public interface Surface<T> {
 	 * 
 	 * @return	the snap distance
 	 */
-	public double getSnapDistance();
+	double getSnapDistance();
 
 	/**
 	 * Sets the offset added to the location calculations and returned
@@ -372,7 +372,7 @@ public interface Surface<T> {
 	 * @param offset	the distance (x,y) from the origin (0,0).
 	 * @return			this {@code Surface}.
 	 */
-	public Surface<T> setSurfaceOffset(Point2D.Double offset);
+	Surface<T> setSurfaceOffset(Point2D.Double offset);
 	
 	/**
 	 * Returns the offset added to the location calculations and returned
@@ -380,7 +380,7 @@ public interface Surface<T> {
 	 * 
 	 * @return	the offset added to the location calculations
 	 */
-	public Point2D.Double getSurfaceOffset();
+	Point2D.Double getSurfaceOffset();
 
 	/**
 	 * Sets the flag indicating whether results returned
@@ -391,7 +391,7 @@ public interface Surface<T> {
 	 * @param b
 	 * @return			this {@code Surface}.
 	 */
-	public Surface<T> setUseIntegerPrecision(boolean b);
+	Surface<T> setUseIntegerPrecision(boolean b);
 	
 	/**
 	 * Returns a boolean flag indicating that all calculations of location 
@@ -399,7 +399,7 @@ public interface Surface<T> {
 	 * 
 	 * @return	true, if useIntegerPrecision is set to true, false if not.
 	 */
-	public boolean getUseIntegerPrecision();
+	boolean getUseIntegerPrecision();
 
 	/**
 	 * Sets the radius which forms a circle around a given corner,
@@ -408,7 +408,7 @@ public interface Surface<T> {
 	 * @param radius	the distance from the corner.
 	 * @return			this {@code Surface}.
 	 */
-	public Surface<T> setCornerClickRadius(double radius);
+	Surface<T> setCornerClickRadius(double radius);
 	
 	/**
 	 * Returns the radius which forms a circle around a given corner,
@@ -416,21 +416,21 @@ public interface Surface<T> {
 	 * 
 	 * @return	corner click radius recognition distance.
 	 */
-	public double getCornerClickRadius();
+	double getCornerClickRadius();
 
 	/**
 	 * Sets the size of all dividers in their static (unchanging) dimension.
 	 * @param size	the size of all dividers.
 	 * @return		this {@code Surface}.
 	 */
-	public Surface<T> setDividerSize(double size);
+	Surface<T> setDividerSize(double size);
 	
 	/**
 	 * Returns the configured divider size.
 	 * 
 	 * @return	the configured divider size.
 	 */
-	public double getDividerSize();
+	double getDividerSize();
 	
 	/**
 	 * This method is to be called by the client code everytime a layout
@@ -441,7 +441,7 @@ public interface Surface<T> {
 	 * Component, the "layout" method of a Pivot skin, or "changed" method of a "BoundsProperty"
 	 * ChangeListener in JavaFX.
 	 */
-	public void requestLayout();
+	void requestLayout();
 	
 	/**
 	 * Notifies this Surface that changes to its underlying layout have occurred.
@@ -452,7 +452,7 @@ public interface Surface<T> {
 	 * @param previous		the previous rectangle describing the object's bounds.
 	 * @param current		the current rectangle describing the object's new bounds.
 	 */
-	public void notifyChange(ChangeType changeType, T t, String id, Rectangle2D.Double previous, Rectangle2D.Double current);
+	void notifyChange(ChangeType changeType, T t, String id, Rectangle2D.Double previous, Rectangle2D.Double current);
 	
 	/**
 	 * User must call this method to receive layout events relevant to mouse drags
@@ -461,7 +461,7 @@ public interface Surface<T> {
 	 * @param x		the x location of the user's mouse press.
 	 * @param y		the y location of the user's mouse press.
 	 */
-	public void mousePressed(double x, double y);
+	void mousePressed(double x, double y);
 	
 	/**
 	 * User must call this method to receive layout events relevant to mouse drags
@@ -470,14 +470,14 @@ public interface Surface<T> {
 	 * @param x		the x location of the user's mouse drag.
 	 * @param y		the y location of the user's mouse drag.
 	 */
-	public void mouseDragged(double x, double y);
+	void mouseDragged(double x, double y);
 	
 	/**
 	 * User must call this method to receive layout events relevant to mouse releases.
 	 */
-	public void mouseReleased();
+	void mouseReleased();
 
-	public void mouseMoved(double x, double y);
+	void mouseMoved(double x, double y);
 	
 	/**
 	 * Returns a serialized form of this {@code Surface} in
@@ -485,7 +485,7 @@ public interface Surface<T> {
 	 * 
 	 * @return	this Surface in serialized form
 	 */
-	public String serialize();
+	String serialize();
 	
 	/**
 	 * Returns a {@code Surface} implementation from a JSON String.
@@ -493,6 +493,7 @@ public interface Surface<T> {
 	 * @param jsonSurface
 	 * @return	the deserialized {@code Surface}
 	 */
-	public Surface<T> deSerialize(String jsonSurface);
+	Surface<T> deSerialize(String jsonSurface);
 
+	void setDragEnabled (boolean isEnabled);
 }
