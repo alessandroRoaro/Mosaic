@@ -425,7 +425,7 @@ class MosaicEngineImpl<T> implements MosaicEngine<T> {
 	}
 	
 	private List<Node<T>> transferNodesLeft(SurfacePriviledged<T> surface, Divider<T> source, Divider<T> target, double mergeLoc) {
-		List<Node<T>> affectedNodes = new ArrayList<Node<T>>();
+		List<Node<T>> affectedNodes = new ArrayList<>();
 		double delta = source.r.x - mergeLoc;
 		for(Node<T> n : source.nextNodes()) {
 			n.r.x -= delta;
@@ -575,8 +575,8 @@ class MosaicEngineImpl<T> implements MosaicEngine<T> {
 		List<Divider<T>> prevSearchResults = surface.getSearchResults(node.prevHorizontal);
 		boolean resultsAreLeading = node.prevVertical.leadingJoins.contains(prevSearchResults.get(0));
 		Set<Divider<T>> moveList = resultsAreLeading ? 
-			new HashSet<Divider<T>>(node.prevVertical.leadingJoins) : 
-				new HashSet<Divider<T>>(node.nextVertical.trailingJoins);
+			new HashSet<>(node.prevVertical.leadingJoins) :
+				new HashSet<>(node.nextVertical.trailingJoins);
 		moveList.addAll(prevSearchResults);
 		
 		double reductionAmt = Math.rint((node.r.height / 2d) + dividerAllowance / (double)(moveList.size() + 1));
@@ -587,8 +587,8 @@ class MosaicEngineImpl<T> implements MosaicEngine<T> {
 		prevSearchResults = surface.getSearchResults(node.nextHorizontal);
 		resultsAreLeading = node.prevVertical.leadingJoins.contains(prevSearchResults.get(0));
 		moveList = resultsAreLeading ? 
-			new HashSet<Divider<T>>(node.prevVertical.leadingJoins) : 
-				new HashSet<Divider<T>>(node.nextVertical.trailingJoins);
+			new HashSet<>(node.prevVertical.leadingJoins) :
+				new HashSet<>(node.nextVertical.trailingJoins);
 		moveList.addAll(prevSearchResults);
 		
 		reductionAmt = Math.rint((node.r.height / 2d) + dividerAllowance / (double)(moveList.size() + 1));
@@ -620,8 +620,8 @@ class MosaicEngineImpl<T> implements MosaicEngine<T> {
 		List<Divider<T>> prevSearchResults = surface.getSearchResults(node.prevVertical);
 		boolean resultsAreLeading = node.prevHorizontal.leadingJoins.contains(prevSearchResults.get(0));
 		Set<Divider<T>> moveList = resultsAreLeading ? 
-			new HashSet<Divider<T>>(node.prevHorizontal.leadingJoins) : 
-				new HashSet<Divider<T>>(node.nextHorizontal.trailingJoins);
+			new HashSet<>(node.prevHorizontal.leadingJoins) :
+				new HashSet<>(node.nextHorizontal.trailingJoins);
 		moveList.addAll(prevSearchResults);
 		
 		double reductionAmt = Math.rint((node.r.width / 2d) + dividerAllowance / (double)(moveList.size() + 1));
@@ -633,8 +633,8 @@ class MosaicEngineImpl<T> implements MosaicEngine<T> {
 		prevSearchResults = surface.getSearchResults(node.nextVertical);
 		resultsAreLeading = node.prevHorizontal.leadingJoins.contains(prevSearchResults.get(0));
 		moveList = resultsAreLeading ? 
-			new HashSet<Divider<T>>(node.prevHorizontal.leadingJoins) : 
-				new HashSet<Divider<T>>(node.nextHorizontal.trailingJoins);
+			new HashSet<>(node.prevHorizontal.leadingJoins) :
+				new HashSet<>(node.nextHorizontal.trailingJoins);
 		moveList.addAll(prevSearchResults);
 		
 		reductionAmt = Math.rint((node.r.width / 2d) + dividerAllowance / (double)(moveList.size() + 1));
@@ -663,7 +663,7 @@ class MosaicEngineImpl<T> implements MosaicEngine<T> {
 	 * @return				a list of the {@link Node}s affected by the merging.
 	 */
 	private List<Node<T>>  mergeDividers(SurfacePriviledged<T> surface, Divider<T> source, Divider<T> target, double mergeLoc) {
-		List<Node<T>> affectedNodes = new ArrayList<Node<T>>();
+		List<Node<T>> affectedNodes = new ArrayList<>();
 		
 		if(target != null) {
 			//Merging some place in middle, so move target before merging the source into it.
@@ -689,7 +689,8 @@ class MosaicEngineImpl<T> implements MosaicEngine<T> {
 			}
 			source.clear();
 			surface.getVerticalDividers().remove(source);
-		}else{ //Horizontal Dividers
+		}
+		else{ //Horizontal Dividers
 			if(mergeLoc < source.r.y) {
 				affectedNodes.addAll(transferNodesUp(surface, source, target, mergeLoc));
 			}else{
@@ -1432,8 +1433,7 @@ class MosaicEngineImpl<T> implements MosaicEngine<T> {
     	}
     }
     
-    
-    
+
     /**
      * Removes the specified {@link Node} from all of its dependencies
      * and adjusts the virtual "view" elements to reflect the change.
@@ -1442,106 +1442,26 @@ class MosaicEngineImpl<T> implements MosaicEngine<T> {
      * @param node		the Node to remove.
      */
     List<Node<T>> requestRemoveElement(SurfacePriviledged<T> surface, Node<T> node) {
-    	List<Node<T>> affectedNodes = new ArrayList<Node<T>>();
+    	List<Node<T>> affectedNodes = new ArrayList<>();
     	
     	ConnectType vType = getVerticalMergeOptions(node);
 		ConnectType hType = getHorizontalMergeOptions(node);
 		
-		if(vType != ConnectType.NONE || hType != ConnectType.NONE) {
-			if(vType != ConnectType.NONE) {
-				switch(vType) {
-					case TOP: {
-						affectedNodes = mergeDividers(surface, node.prevHorizontal, node.nextHorizontal, 
-							node.nextHorizontal == null ? surface.getArea().height : node.nextHorizontal.r.y);
-						break;
-					}
-					case BOTTOM: {
-						affectedNodes = mergeDividers(surface, node.nextHorizontal, node.prevHorizontal, 
-							node.prevHorizontal == null ? -surface.getDividerSize() : node.prevHorizontal.r.y);
-						break;
-					}
-					case BOTH: {
-						affectedNodes = mergeDividers(surface, node.prevHorizontal, node.nextHorizontal, 
-							node.r.getMaxY() - Math.rint(node.r.height / 2));
-						break;
-					}
-                    default:
-                        break;
-				}
-			}else{
-				switch(hType) {
-					case LEFT: {
-						affectedNodes = mergeDividers(surface, node.prevVertical, node.nextVertical, 
-							node.nextVertical == null ? surface.getArea().width : node.nextVertical.r.x);
-						break;
-					}
-					case RIGHT: {
-						affectedNodes = mergeDividers(surface, node.nextVertical, node.prevVertical, 
-							node.prevVertical == null ? -surface.getDividerSize() : node.prevVertical.r.x);
-						break;
-					}
-					case BOTH: {
-						affectedNodes = mergeDividers(surface, node.prevVertical, node.nextVertical, 
-							node.r.getMaxX() - Math.rint(node.r.width / 2));
-						break;
-					}
-                    default:
-                        break;
-				}
-			}
-		}else{
+		if (vType != ConnectType.NONE || hType != ConnectType.NONE) {
+			affectedNodes = getNodesAffectedByRemoval(surface, node, affectedNodes, vType, hType);
+		} else{
 			vType = getVerticalMergeOptionsLevel2(surface, node);
 			hType = getHorizontalMergeOptionsLevel2(surface, node);
-			if(vType != ConnectType.NONE || hType != ConnectType.NONE) {
-				if(vType != ConnectType.NONE) {
-					switch(vType) {
-						case TOP: {
-							affectedNodes = mergeDividers(surface, node.prevHorizontal, node.nextHorizontal, 
-								node.nextHorizontal == null ? surface.getArea().height : node.nextHorizontal.r.y);
-							break;
-						}
-						case BOTTOM: {
-							affectedNodes = mergeDividers(surface, node.nextHorizontal, node.prevHorizontal, 
-								node.prevHorizontal == null ? -surface.getDividerSize() : node.prevHorizontal.r.y);
-							break;
-						}
-						case BOTH: {
-							affectedNodes = mergeDividers(surface, node.prevHorizontal, node.nextHorizontal, 
-								node.r.getMaxY() - Math.rint(node.r.height / 2));
-							break;
-						}
-                        default:
-                            break;
-					}
-				}else{
-					switch(hType) {
-						case LEFT: {
-							affectedNodes = mergeDividers(surface, node.prevVertical, node.nextVertical, 
-								node.nextVertical == null ? surface.getArea().width : node.nextVertical.r.x);
-							break;
-						}
-						case RIGHT: {
-							affectedNodes = mergeDividers(surface, node.nextVertical, node.prevVertical, 
-								node.prevVertical == null ? -surface.getDividerSize() : node.prevVertical.r.x);
-							break;
-						}
-						case BOTH: {
-							affectedNodes = mergeDividers(surface, node.prevVertical, node.nextVertical, 
-								node.r.getMaxX() - Math.rint(node.r.width / 2));
-							break;
-						}
-                        default:
-                            break;
-					}
-				}
-			}else{
+			if (vType != ConnectType.NONE || hType != ConnectType.NONE) {
+				affectedNodes = getNodesAffectedByRemoval(surface, node, affectedNodes, vType, hType);
+			} else{
 				vType = getVerticalMergeOptionsLevel3(surface, node);
 				hType = getHorizontalMergeOptionsLevel3(surface, node);
 				
-				if(vType != ConnectType.NONE || hType != ConnectType.NONE) {
-					if(vType == ConnectType.BOTH) {
+				if (vType != ConnectType.NONE || hType != ConnectType.NONE) {
+					if (vType == ConnectType.BOTH) {
 						affectedNodes = mergeDividersVerticallyWithPeripheralMove(surface, node);
-					}else{
+					}else {
 						affectedNodes = mergeDividersHorizontallyWithPeripheralMove(surface, node);
 					}
 				}
@@ -1552,8 +1472,51 @@ class MosaicEngineImpl<T> implements MosaicEngine<T> {
 	
 		return affectedNodes;
     }
-    
-    /**
+
+
+	private List<Node<T>> getNodesAffectedByRemoval(SurfacePriviledged<T> surface, Node<T> node, List<Node<T>> affectedNodes, ConnectType vType, ConnectType hType) {
+		if(vType != ConnectType.NONE) {
+			switch(vType) {
+				case TOP: {
+					affectedNodes = mergeDividers(surface, node.prevHorizontal, node.nextHorizontal,
+										node.nextHorizontal == null ? surface.getArea().height : node.nextHorizontal.r.y);
+					break;
+				}
+				case BOTTOM: {
+					affectedNodes = mergeDividers(surface, node.nextHorizontal, node.prevHorizontal,
+										node.prevHorizontal == null ? -surface.getDividerSize() : node.prevHorizontal.r.y);
+					break;
+				}
+				case BOTH: {
+					affectedNodes = mergeDividers(surface, node.prevHorizontal, node.nextHorizontal,
+								node.r.getMaxY() - Math.rint(node.r.height / 2));
+					break;
+				}
+			}
+		} else {
+			switch(hType) {
+				case LEFT: {
+					affectedNodes = mergeDividers(surface, node.prevVertical, node.nextVertical,
+										node.nextVertical == null ? surface.getArea().width : node.nextVertical.r.x);
+					break;
+				}
+				case RIGHT: {
+					affectedNodes = mergeDividers(surface, node.nextVertical, node.prevVertical,
+										node.prevVertical == null ? -surface.getDividerSize() : node.prevVertical.r.x);
+					break;
+				}
+				case BOTH: {
+					affectedNodes = mergeDividers(surface, node.prevVertical, node.nextVertical,
+								node.r.getMaxX() - Math.rint(node.r.width / 2));
+					break;
+				}
+			}
+		}
+
+		return affectedNodes;
+	}
+
+	/**
      * Returns a ConnectType enum internally overloaded to return a reference to the side
      * or side(s) which can can be moved. This method checks for the option of vertically
      * merging two Horizontal Dividers and requires that the Divider length be the same

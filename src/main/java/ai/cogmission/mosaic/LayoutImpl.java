@@ -366,8 +366,7 @@ public class LayoutImpl<T> implements Layout {
 	}
 	
 	@Override
-	public Layout addCell(String id, double x, double y, double width, double height,
-		double minW, double maxW, double minH, double maxH) {
+	public Layout addCell(String id, double x, double y, double width, double height, double minW, double maxW, double minH, double maxH) {
 		
 		if(checkIsAdded(id)) {
 			throw new IllegalArgumentException("Attempt to add duplicate cell: " + id);
@@ -433,20 +432,8 @@ public class LayoutImpl<T> implements Layout {
 		}
 		return false;
 	}
-	
-	/**
-	 * 
-	 * @param id
-	 * @param x
-	 * @param y
-	 * @param width
-	 * @param height
-	 * @param minW
-	 * @param maxW
-	 * @param minH
-	 * @param maxH
-	 * @return
-	 */
+
+
 	public boolean replaceOrAddCell(String id, double x, double y, double width, double height,
 		double minW, double maxW, double minH, double maxH, double hWeight, double vWeight) {
 		

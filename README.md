@@ -4,8 +4,11 @@ Improvements:
 - Added possibility to set a global minimum width and height for nodes in MosaicPane
 - Added cursors for dragging and resizing
 - A drop is rejected when it doesn't respect the minimum width and height of the nodes
-- Dragging is disabled when there is only one node
 - Logs filtering by level (debug, verbose, info, error)
+- Handling of drag events that started outside of the mosaic and added MosaicPaneListener interface to listen to such events
+
+Fixes:
+- Dragging is disabled when there is only one node
 
 
 # Mosaic

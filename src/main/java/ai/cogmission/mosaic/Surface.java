@@ -69,6 +69,7 @@ public interface Surface<T> {
 	 * the change in its layout.
 	 */
 	void requestAdd(T source, String sourceID, T target, Position p);
+
 	
 	/**
 	 * Moves the specified source object to the specified {@link Position} relative to
@@ -484,6 +485,18 @@ public interface Surface<T> {
 	void mouseReleased();
 
 	void mouseMoved(double x, double y);
+
+	/**
+	 * Invoked when a drag over is detected, related to an item dragged from outside the MosaicPane.
+	 *
+	 * @return the id of the node that is being dragged over
+	 */
+	String dragOverFromOutside (double x, double y);
+
+	/**
+	 * Invoked when a drag drop event is detected, related to an item dragged from outside the MosaicPane.
+	 */
+	void dragDroppedFromOutside (double x, double y);
 	
 	/**
 	 * Returns a serialized form of this {@code Surface} in

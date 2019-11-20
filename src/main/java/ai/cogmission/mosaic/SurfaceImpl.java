@@ -335,11 +335,11 @@ public class SurfaceImpl<T> extends SurfacePriviledged<T> {
 			
 			//Signal the client to remove the object associated with the removed "node".
 			node.force(this, /* isMoveOperation() ? ChangeType.REMOVE_RETAIN : */  ChangeType.REMOVE_DISCARD);
-			
+
 			for(Node<T> n : affectedNodes) {
 				n.set(this, ChangeType.RESIZE_RELOCATE);
 			}
-			
+
 			removeNodeReferences(node);
 			
 			getPathIterator().assemblePaths(layout.getRoot());
@@ -1404,5 +1404,29 @@ public class SurfaceImpl<T> extends SurfacePriviledged<T> {
 
 		List<Element<T>> elems = inputManager.findElements(x, y);
 		inputManager.mouseMoved(elems, x, y);
+	}
+
+	@Override
+	public String dragOverFromOutside (double x, double y) {
+		if(inputManager == null) {
+			throw new IllegalStateException("Surface.mousePressed cannot be called before " +
+					"adding the surface to a MosaicEngine");
+		}
+
+		List<Element<T>> elems = inputManager.findElements(x, y);
+
+		if (elems.size() == 1 && elems.get(0) instanceof Node) {
+			return elems.get(0).stringID;
+		}
+
+		return null;
+	}
+
+	@Override
+	public void dragDroppedFromOutside (double x, double y) {
+		if(inputManager == null) {
+			throw new IllegalStateException("Surface.mousePressed cannot be called before " +
+					"adding the surface to a MosaicEngine");
+		}
 	}
 }

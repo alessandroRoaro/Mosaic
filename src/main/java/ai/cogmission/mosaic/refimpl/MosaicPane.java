@@ -2,17 +2,16 @@ package ai.cogmission.mosaic.refimpl;
 
 import java.awt.geom.Rectangle2D;
 
-import ai.cogmission.mosaic.ChangeType;
-import ai.cogmission.mosaic.MosaicEngine;
-import ai.cogmission.mosaic.MosaicEngineBuilder;
-import ai.cogmission.mosaic.MosaicSurfaceBuilder;
-import ai.cogmission.mosaic.Surface;
-import ai.cogmission.mosaic.SurfaceListener;
+import ai.cogmission.mosaic.*;
+import javafx.event.EventHandler;
 import javafx.event.EventType;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.effect.DropShadow;
+import javafx.scene.input.DataFormat;
+import javafx.scene.input.DragEvent;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.input.TransferMode;
 import javafx.scene.layout.Region;
 import javafx.scene.paint.Color;
 
@@ -25,11 +24,17 @@ import javafx.scene.paint.Color;
  * @param <T>
  */
 public class MosaicPane<T extends Node> extends Region {
+	public static final DataFormat MOSAIC_DRAG_OVER_ITEM_FORMAT = new DataFormat("javafx.scene.Node");
+
 	private MosaicEngine<T> layoutEngine;
 	private Surface<T> surface;
 	private Group content;
 	private double nodeMinWidth;
 	private double nodeMinHeight;
+	private MosaicPaneListener listener;
+
+	private Object itemBeingDraggedFromOutside;
+	private String currentNodeIdDraggedOverFromOutside;
 	
 	/**
 	 * Constructs a new {@code MosaicPane}
@@ -85,6 +90,7 @@ public class MosaicPane<T extends Node> extends Region {
 				this.surface.mousePressed(evt.getX(), evt.getY());
 			}
 			else if(type == MouseEvent.MOUSE_DRAGGED) {
+				Log.d("mouse dragged");
 				this.surface.mouseDragged(evt.getX(), evt.getY());
 			}
 			else if(type == MouseEvent.MOUSE_RELEASED) {
@@ -94,7 +100,69 @@ public class MosaicPane<T extends Node> extends Region {
 				this.surface.mouseMoved(evt.getX(), evt.getY());
 			}
 		});
+
+        setupDragAndDropHandlers();
 	}
+
+
+	private void setupDragAndDropHandlers () {
+		setOnDragEntered(dragEvent -> {
+			itemBeingDraggedFromOutside = dragEvent.getDragboard().getContent(MOSAIC_DRAG_OVER_ITEM_FORMAT);
+			dragEvent.consume();
+		});
+
+		setOnDragOver(dragEvent -> {
+			if (itemBeingDraggedFromOutside != null) {
+				String nodeId = surface.dragOverFromOutside(dragEvent.getX(), dragEvent.getY());
+
+				if (nodeId == null) {
+					if (currentNodeIdDraggedOverFromOutside != null) {
+						if (listener != null) {
+							listener.nodeExitedWithDrag(currentNodeIdDraggedOverFromOutside);
+						}
+
+						currentNodeIdDraggedOverFromOutside = null;
+					}
+				}
+				else if (listener != null) {
+					if (currentNodeIdDraggedOverFromOutside != null && !nodeId.equals(currentNodeIdDraggedOverFromOutside)) {
+						listener.nodeExitedWithDrag(currentNodeIdDraggedOverFromOutside);
+					}
+
+					listener.nodeEnteredWithDrag(nodeId);
+					currentNodeIdDraggedOverFromOutside = nodeId;
+					dragEvent.acceptTransferModes(TransferMode.MOVE);
+				}
+			}
+
+			dragEvent.consume();
+		});
+
+		setOnDragExited(dragEvent -> {
+			if (listener != null && currentNodeIdDraggedOverFromOutside != null) {
+				listener.nodeExitedWithDrag(currentNodeIdDraggedOverFromOutside);
+			}
+
+			itemBeingDraggedFromOutside = null;
+			currentNodeIdDraggedOverFromOutside = null;
+			dragEvent.consume();
+		});
+
+		setOnDragDropped(dragEvent -> {
+			if (listener != null && currentNodeIdDraggedOverFromOutside != null) {
+				listener.dragDropped(currentNodeIdDraggedOverFromOutside, dragEvent.getX(), dragEvent.getY());
+			}
+
+			dragEvent.consume();
+		});
+
+		setOnDragDone(dragEvent -> {
+			itemBeingDraggedFromOutside = null;
+			currentNodeIdDraggedOverFromOutside = null;
+			dragEvent.consume();
+		});
+	}
+
 	
 	/**
 	 * Called to add an object to be laid out, to the layout engine.
@@ -126,6 +194,18 @@ public class MosaicPane<T extends Node> extends Region {
 	public void add(T t, String id, double percentX, double percentY, double percentWidth, double percentHeight) {
 		surface.addRelative(id, t, percentX, percentY, percentWidth, percentHeight, getNodeMinWidth(), Double.MAX_VALUE, getNodeMinHeight(), Double.MAX_VALUE);
 		content.getChildren().add(t);
+
+		checkEnableDragging();
+	}
+
+	public void addIntoNode (T source, String id, T target, Position pos) {
+		surface.requestAdd(source, id, target, pos);
+
+		checkEnableDragging();
+	}
+
+	public void remove (String id) {
+		surface.requestRemove(id);
 
 		checkEnableDragging();
 	}
@@ -206,5 +286,18 @@ public class MosaicPane<T extends Node> extends Region {
 
 	public double getNodeMinHeight() {
 		return nodeMinHeight;
+	}
+
+
+	public void setListener (MosaicPaneListener listener) {
+		this.listener = listener;
+	}
+
+
+	public interface MosaicPaneListener {
+
+		void nodeEnteredWithDrag (String nodeId);
+		void nodeExitedWithDrag (String nodeId);
+		void dragDropped (String nodeId, double x, double y);
 	}
 }
