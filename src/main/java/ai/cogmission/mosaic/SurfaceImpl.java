@@ -402,7 +402,12 @@ public class SurfaceImpl<T> extends SurfacePriviledged<T> {
 	public void setDragEnabled(boolean isEnabled) {
 		isDragEnabled = isEnabled;
 	}
-	
+
+	@Override
+	public MosaicEngineImpl.InputManager getInputManager() {
+		return inputManager;
+	}
+
 	void snapshotInterimLayout() {
 		this.interimLayoutSnapshot = new LayoutImpl<T>(layout);
 	}

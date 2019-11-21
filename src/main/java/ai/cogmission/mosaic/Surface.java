@@ -515,4 +515,6 @@ public interface Surface<T> {
 	Surface<T> deSerialize(String jsonSurface);
 
 	void setDragEnabled (boolean isEnabled);
+
+	MosaicEngineImpl.InputManager getInputManager ();
 }

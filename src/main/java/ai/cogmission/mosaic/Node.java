@@ -335,8 +335,8 @@ class Node<T> extends Element<T> {
 	 */
 	void force(SurfacePriviledged<T> surface, ChangeType changeType) {
 		setOffset(surface);
-    	surface.notifyChange(changeType, t, stringID, 
-    		new Rectangle2D.Double(copy.x, copy.y, copy.width, copy.height), 
+    	surface.notifyChange(changeType, t, stringID,
+    		new Rectangle2D.Double(copy.x, copy.y, copy.width, copy.height),
     		new Rectangle2D.Double(r.x, r.y, r.width, r.height));
         copy.setFrame(r);
 	}

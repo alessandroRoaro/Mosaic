@@ -6,19 +6,23 @@ import ai.cogmission.mosaic.ModelLoader;
 import ai.cogmission.mosaic.Position;
 import javafx.application.Application;
 import javafx.event.EventHandler;
+import javafx.geometry.Bounds;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.*;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.TextAlignment;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
@@ -33,6 +37,8 @@ public class MosaicPaneRefImpl extends Application {
 	private MosaicPane<Node> mosaicPane;
 
 	private boolean pippoIsDropped = false;
+	private boolean isDraggingOutside = false;
+	private Stage draggedWindow;
 
 
 	@Override
@@ -68,7 +74,7 @@ public class MosaicPaneRefImpl extends Application {
 
 
 
-		BorderPane root = new BorderPane();
+		AnchorPane root = new AnchorPane();
 		Label pippo = new Label("Drag me!");
 		pippo.setId("pippo");
 		pippo.setStyle("-fx-background-color: " + colors[0] + ";-fx-alignment:center;-fx-text-alignment:center;");
@@ -85,17 +91,31 @@ public class MosaicPaneRefImpl extends Application {
 			db.setDragView(pippo.snapshot(null, null));
 			event.consume();
 		});
-		pippo.setOnDragOver(event -> {
-			event.acceptTransferModes(TransferMode.MOVE);
+
+		root.setOnMouseDragged(dragEvent -> {
+			if (!isDraggingOutside && mosaicPane.localToScene(mosaicPane.getBoundsInLocal()).contains(dragEvent.getX(), dragEvent.getY())) return;
+
+			isDraggingOutside = true;
+
+			draggedWindow.setX(dragEvent.getScreenX());
+			draggedWindow.setY(dragEvent.getScreenY());
 		});
-		root.setLeft(pippo);
+
+		root.setOnMouseReleased(mouseDragEvent -> {
+			if (isDraggingOutside) {
+				isDraggingOutside = false;
+			}
+		});
+
+		root.getChildren().add(pippo);
 
 		Pane mosaicContainer = new Pane(mosaicPane);
 		mosaicContainer.setPrefWidth(1200);
 		mosaicContainer.setPrefHeight(900);
 		mosaicPane.setPrefWidth(1200);
 		mosaicPane.setPrefHeight(900);
-		root.setRight(mosaicContainer);
+		mosaicContainer.setLayoutX(500);
+		root.getChildren().add(mosaicContainer);
 
 		Scene scene = new Scene(root, 1600, 900);
 	    stage.setTitle("Mosaic Layout Engine Demo (JavaFX)");
@@ -103,18 +123,18 @@ public class MosaicPaneRefImpl extends Application {
 		stage.show();
 
 		mosaicPane.setListener(new MosaicPane.MosaicPaneListener() {
-			public void nodeEnteredWithDrag (String nodeId) {
+			public void nodeEnteredWithDrag (DragEvent evt, String nodeId) {
 				Label label = clientMap.get(nodeId);
 				label.setBorder(new Border(new BorderStroke(Color.PURPLE, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderStroke.THICK)));
 //				label.setStyle("-fx-border-color: purple; -fx-border-width: 2px;");
 			}
 
-			public void nodeExitedWithDrag (String nodeId) {
+			public void nodeExitedWithDrag (DragEvent evt, String nodeId) {
 				Label label = clientMap.get(nodeId);
 				label.setBorder(null);
 			}
 
-			public void dragDropped (String nodeId, double x, double y) {
+			public void dragDropped (DragEvent evt, String nodeId, double x, double y) {
 				Label target = clientMap.get(nodeId);
 				Position pos;
 
@@ -125,22 +145,38 @@ public class MosaicPaneRefImpl extends Application {
 					pos = Position.SOUTH;
 				}
 
-				//TODO make this return the added node (or at least the size) and resize the node added (or should this be done before...?)
 				Label newLabel = getLabel(colors[1], "10");
 				pippoIsDropped = true;
 				mosaicPane.addIntoNode(newLabel, "10", target, pos);
-//				pippo.setPrefWidth(450);
-//				pippo.setPrefHeight(200);
+			}
+
+			public void dragExited(MouseEvent evt, String nodeId) {
+				Pane root = new Pane();
+				Label dragView = new Label();
+				root.getChildren().add(dragView);
+
+				// make ghost snapshot of the dragged item
+				Label selectedNode = clientMap.get(nodeId);
+				double originalWidth = selectedNode.getWidth();
+				double originalHeight = selectedNode.getHeight();
+				selectedNode.resize(200, 200);
+				ImageView ghostImage = new ImageView(selectedNode.snapshot(null, null));
+				ghostImage.setStyle("-fx-opacity: 0.5; -fx-effect: dropshadow(three-pass-box, #333, 10, 0, 0, 0);");
+				selectedNode.resize(originalWidth, originalHeight);
+				dragView.setGraphic(ghostImage);
+
+				// show view in a new window
+				draggedWindow = new Stage();
+				draggedWindow.initModality(Modality.WINDOW_MODAL);
+				draggedWindow.initStyle(StageStyle.UNDECORATED);
+				draggedWindow.setScene(new Scene(root));
+				draggedWindow.setX(evt.getScreenX());
+				draggedWindow.setY(evt.getScreenY());
+				draggedWindow.show();
 			}
 		});
 	}
-	
-	public void addNewWindowTrigger(MosaicPane<Node> mp) {
-//		final Surface<Node> surface = mp.getSurface();
-//		final MosaicEngine<Node> engine = mp.getEngine();
-		
-		
-	}
+
 	
 	public Label getLabel(String color, String id) {
 		Label label = new Label();
@@ -172,7 +208,7 @@ public class MosaicPaneRefImpl extends Application {
 //		    }catch(Exception e) { e.printStackTrace(); }
 
 			String path = "C:/Users/PC-1-/workspace/Mosaic/out/production/resources/testModel.txt";
-			args = new String[] { "--file="+path, "--surface=test"};
+			args = new String[] { "--file="+path, "--surface=model6"};
 		}
 		Log.d(System.getProperty("user.dir"));
         launch(args);

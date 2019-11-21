@@ -1285,25 +1285,21 @@ class MosaicEngineImpl<T> implements MosaicEngine<T> {
     	surface.snapshotLayout();
 		
 		source.force(surface, ChangeType.MOVE_BEGIN);
-		
+
 		List<Node<T>> affectedNodes = requestRemoveElement(surface, source);
-		
-		if(!affectedNodes.isEmpty()) {
-			adjustWeights(surface);
-			
-			for(Node<T> n : affectedNodes) {
-				if(n == source) continue;
-				n.set(surface, ChangeType.ANIMATE_RESIZE_RELOCATE);
-			}
-			
-			surface.removeNodeReferences(source);
-			
-			surface.getPathIterator().assemblePaths(surface.getRoot());
-			
-			surface.snapshotInterimLayout();
-		}else{
-			//////////  VETO REMOVE /////////
+
+		if(affectedNodes.isEmpty()) return;
+
+		adjustWeights(surface);
+
+		for(Node<T> n : affectedNodes) {
+			if(n == source) continue;
+			n.set(surface, ChangeType.ANIMATE_RESIZE_RELOCATE);
 		}
+
+		surface.removeNodeReferences(source);
+		surface.getPathIterator().assemblePaths(surface.getRoot());
+		surface.snapshotInterimLayout();
     }
     
     boolean testDropElement(SurfacePriviledged<T> surface, LayoutImpl<T> interimLayout, Node<T> source, Node<T> target, Position p) {
@@ -1352,7 +1348,7 @@ class MosaicEngineImpl<T> implements MosaicEngine<T> {
     	surface.setHasValidDrop(false);
     	
     	for(Node<T> n : surface.getNodeList()) {
-    		if (n.r == null) continue;
+    		if (n.r == null || interimLayout == null) continue;
 
     		n.r.setFrame(interimLayout.getNode(n.stringID).r);
 	    	n.force(surface, ChangeType.RESIZE_RELOCATE);
@@ -1709,7 +1705,7 @@ class MosaicEngineImpl<T> implements MosaicEngine<T> {
 	 * @author David Ray
 	 *
 	 */
-	class InputManager {
+	public class InputManager {
 		Element<T> selectedElement;
 		Element<T> altElement;
 		double dragXOffset;
@@ -1755,7 +1751,7 @@ class MosaicEngineImpl<T> implements MosaicEngine<T> {
 			Corner corner = null;
 			searchResults.clear();
 			List<Node<T>> searchList = surface.getNodeList();
-			for(Node<T> n : searchList) { 
+			for(Node<T> n : searchList) {
 				if(n.r.contains(x, y)) {
 					searchResults.add(n);
 					break;
@@ -1873,31 +1869,36 @@ class MosaicEngineImpl<T> implements MosaicEngine<T> {
 					selectedElement.r.x = dragPoint.x;
 					selectedElement.r.y = dragPoint.y;
 					LayoutImpl<T> removalSnapshot = surface.getInterimSnapshot();
+
 					if(isDraggingNode) {
 						Node<T> currentDragOver =  getDragOverNode(surface, removalSnapshot, x, y);
 						if(currentDragOver != null) {
 							lastDragOver = currentDragOver;
-							
+
 							Position p = getDragQuadrant(removalSnapshot.getNode(currentDragOver.stringID).r, x, y);
 							lastQuadrant = p;
+
 							if (p != null) {
 								Log.d("Drop quadrant: " + lastQuadrant);
 								testDropElement(surface, removalSnapshot, (Node<T>)selectedElement, currentDragOver, p);
-							}else{
+							}
+							else{
 								rejectDropElement(surface, removalSnapshot, (Node<T>)selectedElement, currentDragOver);
 							}
-						}else if(lastDragOver != null){
+						}
+						else if(lastDragOver != null){
 							rejectDropElement(surface, removalSnapshot, (Node<T>)selectedElement, lastDragOver);
 						}
-						
+
 						selectedElement.set(surface, ChangeType.RELOCATE_DRAG_TARGET);
-					}else{
+					}
+					else{
 						surface.setLocked(true);
 						beginDropElement(surface, (Node<T>)selectedElement);
 					}
-					
+
 					isDraggingNode = true;
-					mosaicPane.getScene().setCursor(Cursor.CLOSED_HAND);
+					mosaicPane.setCursor(Cursor.CLOSED_HAND);
 
 					break;
 				}
@@ -1936,7 +1937,7 @@ class MosaicEngineImpl<T> implements MosaicEngine<T> {
 							cancelDropElement(surface, (Node<T>)selectedElement);
 						}
 					}
-					mosaicPane.getScene().setCursor(Cursor.DEFAULT);
+					mosaicPane.setCursor(Cursor.DEFAULT);
 					surface.setLocked(false);
 					break;
 				}
@@ -2001,7 +2002,11 @@ class MosaicEngineImpl<T> implements MosaicEngine<T> {
 				}
 			}
 
-			mosaicPane.getScene().setCursor(cursor);
+			mosaicPane.setCursor(cursor);
+		}
+
+		public Element<T> getSelectedElement () {
+			return selectedElement;
 		}
 	}
 }

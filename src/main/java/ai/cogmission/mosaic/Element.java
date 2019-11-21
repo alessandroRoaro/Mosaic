@@ -12,11 +12,11 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
  * and {@link Divider}s.
  * @param <T>
  */
-abstract class Element<T> implements ElementVisitable<T> {
+public abstract class Element<T> implements ElementVisitable<T> {
 	@JsonProperty
     protected int id;
 	
-    protected String stringID;
+    public String stringID;
     
     protected T t;
     

@@ -3,7 +3,6 @@ package ai.cogmission.mosaic.refimpl;
 import java.awt.geom.Rectangle2D;
 
 import ai.cogmission.mosaic.*;
-import javafx.event.EventHandler;
 import javafx.event.EventType;
 import javafx.scene.Group;
 import javafx.scene.Node;
@@ -35,6 +34,7 @@ public class MosaicPane<T extends Node> extends Region {
 
 	private Object itemBeingDraggedFromOutside;
 	private String currentNodeIdDraggedOverFromOutside;
+	private boolean hasDraggedNodeOutside;
 	
 	/**
 	 * Constructs a new {@code MosaicPane}
@@ -88,10 +88,18 @@ public class MosaicPane<T extends Node> extends Region {
 			EventType type = evt.getEventType();
 			if(type == MouseEvent.MOUSE_PRESSED) {
 				this.surface.mousePressed(evt.getX(), evt.getY());
+				hasDraggedNodeOutside = false;
 			}
 			else if(type == MouseEvent.MOUSE_DRAGGED) {
-				Log.d("mouse dragged");
-				this.surface.mouseDragged(evt.getX(), evt.getY());
+				if (!hasDraggedNodeOutside) { // if node has already been drag outside, don't take care of it anymore
+					if (this.getLayoutBounds().contains(evt.getX(), evt.getY())) {
+						this.surface.mouseDragged(evt.getX(), evt.getY());
+					}
+					else {
+						hasDraggedNodeOutside = true;
+						dragMovedOutside(evt);
+					}
+				}
 			}
 			else if(type == MouseEvent.MOUSE_RELEASED) {
 				this.surface.mouseReleased();
@@ -118,7 +126,7 @@ public class MosaicPane<T extends Node> extends Region {
 				if (nodeId == null) {
 					if (currentNodeIdDraggedOverFromOutside != null) {
 						if (listener != null) {
-							listener.nodeExitedWithDrag(currentNodeIdDraggedOverFromOutside);
+							listener.nodeExitedWithDrag(dragEvent, currentNodeIdDraggedOverFromOutside);
 						}
 
 						currentNodeIdDraggedOverFromOutside = null;
@@ -126,10 +134,10 @@ public class MosaicPane<T extends Node> extends Region {
 				}
 				else if (listener != null) {
 					if (currentNodeIdDraggedOverFromOutside != null && !nodeId.equals(currentNodeIdDraggedOverFromOutside)) {
-						listener.nodeExitedWithDrag(currentNodeIdDraggedOverFromOutside);
+						listener.nodeExitedWithDrag(dragEvent, currentNodeIdDraggedOverFromOutside);
 					}
 
-					listener.nodeEnteredWithDrag(nodeId);
+					listener.nodeEnteredWithDrag(dragEvent, nodeId);
 					currentNodeIdDraggedOverFromOutside = nodeId;
 					dragEvent.acceptTransferModes(TransferMode.MOVE);
 				}
@@ -140,7 +148,7 @@ public class MosaicPane<T extends Node> extends Region {
 
 		setOnDragExited(dragEvent -> {
 			if (listener != null && currentNodeIdDraggedOverFromOutside != null) {
-				listener.nodeExitedWithDrag(currentNodeIdDraggedOverFromOutside);
+				listener.nodeExitedWithDrag(dragEvent, currentNodeIdDraggedOverFromOutside);
 			}
 
 			itemBeingDraggedFromOutside = null;
@@ -150,7 +158,7 @@ public class MosaicPane<T extends Node> extends Region {
 
 		setOnDragDropped(dragEvent -> {
 			if (listener != null && currentNodeIdDraggedOverFromOutside != null) {
-				listener.dragDropped(currentNodeIdDraggedOverFromOutside, dragEvent.getX(), dragEvent.getY());
+				listener.dragDropped(dragEvent, currentNodeIdDraggedOverFromOutside, dragEvent.getX(), dragEvent.getY());
 			}
 
 			dragEvent.consume();
@@ -269,6 +277,16 @@ public class MosaicPane<T extends Node> extends Region {
 	}
 
 
+	private void dragMovedOutside (MouseEvent evt) {
+		if (listener == null) return;
+
+		String selectedNodeID = getSurface().getInputManager().getSelectedElement().stringID;
+		surface.mouseReleased();
+		remove(selectedNodeID);
+		listener.dragExited(evt, selectedNodeID);
+	}
+
+
 	public void setNodeMinWidth(double width) {
 		this.nodeMinWidth = width;
 	}
@@ -296,8 +314,9 @@ public class MosaicPane<T extends Node> extends Region {
 
 	public interface MosaicPaneListener {
 
-		void nodeEnteredWithDrag (String nodeId);
-		void nodeExitedWithDrag (String nodeId);
-		void dragDropped (String nodeId, double x, double y);
+		void nodeEnteredWithDrag (DragEvent evt, String nodeId);
+		void nodeExitedWithDrag (DragEvent evt, String nodeId);
+		void dragDropped (DragEvent evt, String nodeId, double x, double y);
+		void dragExited (MouseEvent evt, String nodeId);
 	}
 }
