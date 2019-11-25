@@ -31,28 +31,28 @@ public class LayoutImpl<T> implements Layout {
 	
 	
 	@JsonProperty
-	private boolean isRelative;
+	public boolean isRelative;
 	
 	@JsonProperty
-	private List<String> cells = new ArrayList<String>();
+	public List<String> cells = new ArrayList<String>();
 	
 	@JsonProperty
-	private List<String> vDividers = new ArrayList<String>();
+	public List<String> vDividers = new ArrayList<String>();
 	
 	@JsonProperty
-	private List<String> hDividers = new ArrayList<String>();
+	public List<String> hDividers = new ArrayList<String>();
 	
 	/** List of all horizontal Dividers */
-    private List<Divider<T>> horizontalDividers = new ArrayList<Divider<T>>();
+	public List<Divider<T>> horizontalDividers = new ArrayList<Divider<T>>();
 	
 	/** List of all vertical Dividers */
-    private List<Divider<T>> verticalDividers = new ArrayList<Divider<T>>();
+	public List<Divider<T>> verticalDividers = new ArrayList<Divider<T>>();
 	
 	/** The list of Nodes */
-	private List<Node<T>> nodeList = new ArrayList<Node<T>>();
-	
-	private Map<String, T> objectIDs = new LinkedHashMap<String, T>();
-	private Map<T, String> typeObjectIDs = new LinkedHashMap<T, String>();
+	public List<Node<T>> nodeList = new ArrayList<Node<T>>();
+
+	public Map<String, T> objectIDs = new LinkedHashMap<String, T>();
+	public Map<T, String> typeObjectIDs = new LinkedHashMap<T, String>();
 	
 	/** Assembles/contains {@link PathIterator.Path} objects */ 
 	private PathIterator<T> pathIterator;

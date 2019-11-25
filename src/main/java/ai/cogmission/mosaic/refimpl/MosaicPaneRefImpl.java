@@ -187,12 +187,12 @@ public class MosaicPaneRefImpl extends Application {
 		label.setFont(Font.font("Arial", FontWeight.BOLD, 16d));
 		label.setStyle("-fx-background-color: " + color + ";-fx-alignment:center;-fx-text-alignment:center;");
 		label.setManaged(false);
-//		label.setOnMouseClicked(mouseEvent -> {
-//			Log.d("click!");
-//			if (mouseEvent.getEventType() == MouseEvent.MOUSE_CLICKED) {
-//				mosaicPane.remove(id);
-//			}
-//		});
+		label.setOnMouseClicked(mouseEvent -> {
+			Log.d("click!");
+			if (mouseEvent.getEventType() == MouseEvent.MOUSE_CLICKED) {
+				mosaicPane.remove(id);
+			}
+		});
 		
 		return label;
 	}
@@ -205,8 +205,8 @@ public class MosaicPaneRefImpl extends Application {
 //		        path = Paths.get(url.toURI()).toAbsolutePath().toString();
 //		    }catch(Exception e) { e.printStackTrace(); }
 
-			String path = "C:/Users/PC-1-/workspace/Mosaic/out/production/resources/testModel.txt";
-			args = new String[] { "--file="+path, "--surface=test"};
+			String path = "C:/Users/PC-1-/workspace/Mosaic/out/production/resources/model6.txt";
+			args = new String[] { "--file="+path, "--surface=model6"};
 		}
 		Log.d(System.getProperty("user.dir"));
         launch(args);

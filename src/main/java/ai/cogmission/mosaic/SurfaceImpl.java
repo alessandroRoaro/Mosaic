@@ -90,7 +90,7 @@ public class SurfaceImpl<T> extends SurfacePriviledged<T> {
        
     /** Used for persistence handling and temporary object storage prior to addition to engine */
     @JsonProperty
-    private LayoutImpl<T> layout;
+    public LayoutImpl<T> layout;
     
     /** Used for saving of state for animated rollback if needed */
     private LayoutImpl<T> layoutCopy;

@@ -404,7 +404,6 @@ class Divider<T> extends Element<T> {
 		double currMax = surfaceArea.getMaxX() - dividerSize;
 		for(Node<T> n : nextNodes) {
 			double maxX = n.r.getMaxX() - n.getMinWidth() - dividerSize;
-			Log.d("node " + n.stringID + " maxX: " + n.r.getMaxX() +", minWidth:  " + n.getMinWidth());
 			if(maxX < currMax) {
 				currMax = maxX;
 			}
@@ -415,7 +414,7 @@ class Divider<T> extends Element<T> {
 				currMax = maxRight;
 			}
 		}
-		Log.d("max x returned: " + currMax);
+
 		return currMax;
 	}
 	

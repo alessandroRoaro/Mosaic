@@ -664,8 +664,30 @@ class MosaicEngineImpl<T> implements MosaicEngine<T> {
 	 */
 	private List<Node<T>>  mergeDividers(SurfacePriviledged<T> surface, Divider<T> source, Divider<T> target, double mergeLoc) {
 		List<Node<T>> affectedNodes = new ArrayList<>();
-		
-		if(target != null) {
+
+		if (target == null) {
+			Divider join = null;
+			Node adjacentNode = null;
+
+			if (source.leadingJoins.size() != 0) {
+				join = source.leadingJoins.iterator().next();
+				adjacentNode = source.nextNodes.get(0);
+			}
+			else if (source.trailingJoins.size() != 0) {
+				join = source.trailingJoins.iterator().next();
+				adjacentNode = source.prevNodes.get(0);
+			}
+
+			if (join != null && adjacentNode != null) {
+				if (source.isVertical) {
+					join.r.width += adjacentNode.r.width + source.r.width;
+				}
+				else {
+					join.r.height += adjacentNode.r.height + source.r.height;
+				}
+			}
+		}
+		else {
 			//Merging some place in middle, so move target before merging the source into it.
 			if((!target.isVertical && mergeLoc != target.r.y && mergeLoc != source.r.y) || 
 				(target.isVertical && mergeLoc != target.r.x && mergeLoc != source.r.x)) {
@@ -1910,14 +1932,10 @@ class MosaicEngineImpl<T> implements MosaicEngine<T> {
 						maxMoveBounds = addPerpendicularBounds(maxMoveBounds, altMaxMoveBounds, ! ((Divider<T>)selectedElement).isVertical);
 					}
 
-					Log.d("maxMoveBounds: " + maxMoveBounds);
-					Log.d("altMaxMoveBounds: " + altMaxMoveBounds);
 					Point2D.Double dividerLocation = new Point2D.Double(selectedElement.r.x, selectedElement.r.y);
 					Point2D.Double dragPoint = moveDragPoint(dividerLocation, maxMoveBounds, x, y, dragXOffset, dragYOffset);
-					Log.d("drag point: " + dragPoint);
 					dragPoint = snapDragPoint(surface, (Divider<T>)selectedElement, dragPoint, maxMoveBounds);
-					Log.d("snap drag point: " + dragPoint);
-					Log.d("________________________");
+
 					if(altElement != null) {
 						dragPoint = snapDragPoint(surface, (Divider<T>)altElement, dragPoint, maxMoveBounds);
 					}
