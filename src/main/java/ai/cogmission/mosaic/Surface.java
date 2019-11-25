@@ -68,7 +68,7 @@ public interface Surface<T> {
 	 * this allows the client to be totally passive with regard to necessary changes to affect
 	 * the change in its layout.
 	 */
-	void requestAdd(T source, String sourceID, T target, Position p);
+	void requestAdd(T source, String sourceID, T target, Position p, double minW, double minH);
 
 	
 	/**

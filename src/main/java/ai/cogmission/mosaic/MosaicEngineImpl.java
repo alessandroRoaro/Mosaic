@@ -1712,7 +1712,7 @@ class MosaicEngineImpl<T> implements MosaicEngine<T> {
 		double dragYOffset;
 		double dividerSize;
 		
-		boolean isDraggingNode;
+		public boolean isDraggingNode;
 		
 		SurfacePriviledged<T> surface;
 		
@@ -1909,9 +1909,15 @@ class MosaicEngineImpl<T> implements MosaicEngine<T> {
 						altMaxMoveBounds = getMaxMoveBounds(surface.getArea(), (Divider<T>)altElement);
 						maxMoveBounds = addPerpendicularBounds(maxMoveBounds, altMaxMoveBounds, ! ((Divider<T>)selectedElement).isVertical);
 					}
+
+					Log.d("maxMoveBounds: " + maxMoveBounds);
+					Log.d("altMaxMoveBounds: " + altMaxMoveBounds);
 					Point2D.Double dividerLocation = new Point2D.Double(selectedElement.r.x, selectedElement.r.y);
 					Point2D.Double dragPoint = moveDragPoint(dividerLocation, maxMoveBounds, x, y, dragXOffset, dragYOffset);
+					Log.d("drag point: " + dragPoint);
 					dragPoint = snapDragPoint(surface, (Divider<T>)selectedElement, dragPoint, maxMoveBounds);
+					Log.d("snap drag point: " + dragPoint);
+					Log.d("________________________");
 					if(altElement != null) {
 						dragPoint = snapDragPoint(surface, (Divider<T>)altElement, dragPoint, maxMoveBounds);
 					}

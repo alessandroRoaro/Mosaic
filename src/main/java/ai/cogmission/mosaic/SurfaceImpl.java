@@ -426,10 +426,10 @@ public class SurfaceImpl<T> extends SurfacePriviledged<T> {
 	 * the change in its layout.
 	 */
 	@Override
-	public void requestAdd(T source, String sourceID, T target, Position p) {
+	public void requestAdd(T source, String sourceID, T target, Position p, double minW, double minH) {
 		validateAddParams(source, sourceID, target, p);
 		
-		Node<T> newNode = new Node<T>(source, sourceID, 0, 0, 0, 0, 0, Double.MAX_VALUE, 0, Double.MAX_VALUE, 0, 0);
+		Node<T> newNode = new Node<T>(source, sourceID, 0, 0, 0, 0, minW, Double.MAX_VALUE, minH, Double.MAX_VALUE, 0, 0);
 		engine.requestAddElement(this, newNode, getNode(layout.get(target)), p);
 	}
 
@@ -919,7 +919,7 @@ public class SurfaceImpl<T> extends SurfacePriviledged<T> {
 		}
 		
 		if(layout == null) {
-			layout = new LayoutImpl<T>(true);
+			layout = new LayoutImpl<>(true);
 		}
 		
 		layout.addCell(id, percentX, percentY, percentWidth, percentHeight, minW, maxW, minH, maxH);

@@ -3,6 +3,7 @@ package ai.cogmission.mosaic.refimpl;
 import java.awt.geom.Rectangle2D;
 
 import ai.cogmission.mosaic.*;
+import javafx.application.Platform;
 import javafx.event.EventType;
 import javafx.scene.Group;
 import javafx.scene.Node;
@@ -96,8 +97,10 @@ public class MosaicPane<T extends Node> extends Region {
 						this.surface.mouseDragged(evt.getX(), evt.getY());
 					}
 					else {
-						hasDraggedNodeOutside = true;
-						dragMovedOutside(evt);
+						if (this.surface.getInputManager().isDraggingNode) {
+							hasDraggedNodeOutside = true;
+							dragMovedOutside(evt);
+						}
 					}
 				}
 			}
@@ -139,7 +142,6 @@ public class MosaicPane<T extends Node> extends Region {
 
 					listener.nodeEnteredWithDrag(dragEvent, nodeId);
 					currentNodeIdDraggedOverFromOutside = nodeId;
-					dragEvent.acceptTransferModes(TransferMode.MOVE);
 				}
 			}
 
@@ -207,7 +209,7 @@ public class MosaicPane<T extends Node> extends Region {
 	}
 
 	public void addIntoNode (T source, String id, T target, Position pos) {
-		surface.requestAdd(source, id, target, pos);
+		surface.requestAdd(source, id, target, pos, getNodeMinWidth(), getNodeMinHeight());
 
 		checkEnableDragging();
 	}
@@ -236,8 +238,13 @@ public class MosaicPane<T extends Node> extends Region {
 		SurfaceListener<T> l = (changeType, n, id, r1, r2) -> {
 			switch(changeType) {
 				case REMOVE_DISCARD: {
-					content.getChildren().remove(n);
-					requestLayout();
+					n.setEffect(null);
+
+					// fix for a ui glitch that would make the drop shadow stay even when the node is removed
+					Platform.runLater(() -> {
+						content.getChildren().remove(n);
+						requestLayout();
+					});
 					break;
 				}
 				case RESIZE_RELOCATE:
@@ -256,13 +263,13 @@ public class MosaicPane<T extends Node> extends Region {
 				}
 				case MOVE_BEGIN: {
 					DropShadow shadow = new DropShadow();
-					shadow.setOffsetX(10);
-					shadow.setOffsetY(10);
-					shadow.setRadius(5);
-					shadow.setColor(Color.GRAY);
+					shadow.setOffsetX(0);
+					shadow.setOffsetY(0);
+					shadow.setRadius(15);
+					shadow.setColor(Color.valueOf("#333"));
 					n.setEffect(shadow);
 					n.toFront();
-					n.setOpacity(.5);
+					n.setOpacity(.58);
 					break;
 				}
 				case MOVE_END: {

@@ -93,7 +93,8 @@ public class MosaicPaneRefImpl extends Application {
 		});
 
 		root.setOnMouseDragged(dragEvent -> {
-			if (!isDraggingOutside && mosaicPane.localToScene(mosaicPane.getBoundsInLocal()).contains(dragEvent.getX(), dragEvent.getY())) return;
+			// are we dragging a window around? draggedWindow can be null when we are just resizing and the drag goes outside.
+			if (draggedWindow == null || !isDraggingOutside && mosaicPane.localToScene(mosaicPane.getBoundsInLocal()).contains(dragEvent.getX(), dragEvent.getY())) return;
 
 			isDraggingOutside = true;
 
@@ -152,8 +153,6 @@ public class MosaicPaneRefImpl extends Application {
 
 			public void dragExited(MouseEvent evt, String nodeId) {
 				Pane root = new Pane();
-				Label dragView = new Label();
-				root.getChildren().add(dragView);
 
 				// make ghost snapshot of the dragged item
 				Label selectedNode = clientMap.get(nodeId);
@@ -163,7 +162,7 @@ public class MosaicPaneRefImpl extends Application {
 				ImageView ghostImage = new ImageView(selectedNode.snapshot(null, null));
 				ghostImage.setStyle("-fx-opacity: 0.5; -fx-effect: dropshadow(three-pass-box, #333, 10, 0, 0, 0);");
 				selectedNode.resize(originalWidth, originalHeight);
-				dragView.setGraphic(ghostImage);
+				root.getChildren().add(ghostImage);
 
 				// show view in a new window
 				draggedWindow = new Stage();
@@ -186,8 +185,7 @@ public class MosaicPaneRefImpl extends Application {
 		label.setOpacity(1.0);
 		label.setTextFill(Color.WHITE);
 		label.setFont(Font.font("Arial", FontWeight.BOLD, 16d));
-		label.setStyle("-fx-background-color: " + color.toString() + 
-			";-fx-alignment:center;-fx-text-alignment:center;");
+		label.setStyle("-fx-background-color: " + color + ";-fx-alignment:center;-fx-text-alignment:center;");
 		label.setManaged(false);
 //		label.setOnMouseClicked(mouseEvent -> {
 //			Log.d("click!");
@@ -208,7 +206,7 @@ public class MosaicPaneRefImpl extends Application {
 //		    }catch(Exception e) { e.printStackTrace(); }
 
 			String path = "C:/Users/PC-1-/workspace/Mosaic/out/production/resources/testModel.txt";
-			args = new String[] { "--file="+path, "--surface=model6"};
+			args = new String[] { "--file="+path, "--surface=test"};
 		}
 		Log.d(System.getProperty("user.dir"));
         launch(args);
