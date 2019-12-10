@@ -319,6 +319,11 @@ public class MosaicPane<T extends Node> extends Region {
 	}
 
 
+	public int getChildrenCount () {
+		return content.getChildren().size();
+	}
+
+
 	public interface MosaicPaneListener {
 
 		void nodeEnteredWithDrag (DragEvent evt, String nodeId);
