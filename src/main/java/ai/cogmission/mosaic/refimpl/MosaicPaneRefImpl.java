@@ -205,8 +205,8 @@ public class MosaicPaneRefImpl extends Application {
 //		        path = Paths.get(url.toURI()).toAbsolutePath().toString();
 //		    }catch(Exception e) { e.printStackTrace(); }
 
-			String path = "C:/Users/PC-1-/workspace/Mosaic/out/production/resources/model6.txt";
-			args = new String[] { "--file="+path, "--surface=model6"};
+			String path = "C:/Users/PC-1-/workspace/Mosaic/out/production/resources/testModel.txt";
+			args = new String[] { "--file="+path, "--surface=test"};
 		}
 		Log.d(System.getProperty("user.dir"));
         launch(args);

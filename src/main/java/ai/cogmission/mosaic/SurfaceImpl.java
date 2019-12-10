@@ -330,21 +330,24 @@ public class SurfaceImpl<T> extends SurfacePriviledged<T> {
 		
 		List<Node<T>> affectedNodes = engine.requestRemoveElement(this, node);
 		
-		if(!affectedNodes.isEmpty()) {
-			engine.adjustWeights(this);
-			
+		if (affectedNodes.isEmpty()) { // this is the last node
 			//Signal the client to remove the object associated with the removed "node".
 			node.force(this, /* isMoveOperation() ? ChangeType.REMOVE_RETAIN : */  ChangeType.REMOVE_DISCARD);
-
-			for(Node<T> n : affectedNodes) {
-				n.set(this, ChangeType.RESIZE_RELOCATE);
-			}
-
 			removeNodeReferences(node);
-			
-			getPathIterator().assemblePaths(layout.getRoot());
-		}else{
-			//////////  VETO REMOVE /////////
+		}
+		else {
+            engine.adjustWeights(this);
+
+            //Signal the client to remove the object associated with the removed "node".
+            node.force(this, /* isMoveOperation() ? ChangeType.REMOVE_RETAIN : */  ChangeType.REMOVE_DISCARD);
+
+            for(Node<T> n : affectedNodes) {
+                n.set(this, ChangeType.RESIZE_RELOCATE);
+            }
+
+            removeNodeReferences(node);
+
+            getPathIterator().assemblePaths(layout.getRoot());
 		}
 	}
 	
