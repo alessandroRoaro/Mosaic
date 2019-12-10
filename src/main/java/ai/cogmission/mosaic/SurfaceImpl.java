@@ -101,8 +101,7 @@ public class SurfaceImpl<T> extends SurfacePriviledged<T> {
     @JsonIgnore
     private String nodeCursor;
 
-    /** Dragging is disabled by default. It gets automatically enabled when two or more nodes are added to the mosaic. */
-    private boolean isDragEnabled = false;
+    private boolean isDragEnabled = true;
 
     
     /**

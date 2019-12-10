@@ -1,16 +1,10 @@
-package ai.cogmission.mosaic.refimpl;
+package ai.cogmission.mosaic;
 
 
-import ai.cogmission.mosaic.Log;
-import ai.cogmission.mosaic.ModelLoader;
-import ai.cogmission.mosaic.Position;
 import javafx.application.Application;
-import javafx.event.EventHandler;
-import javafx.geometry.Bounds;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.*;

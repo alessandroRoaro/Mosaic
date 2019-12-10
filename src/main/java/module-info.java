@@ -12,8 +12,7 @@ module Mosaic {
 	requires jackson.core;
     requires java.desktop;
 
-    opens ai.cogmission.mosaic.refimpl to javafx.graphics;
+    opens ai.cogmission.mosaic to javafx.graphics;
 
     exports ai.cogmission.mosaic;
-    exports ai.cogmission.mosaic.refimpl;
 }

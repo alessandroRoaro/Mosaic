@@ -1,4 +1,4 @@
-//package ai.cogmission.mosaic.refimpl;
+package ai.cogmission.mosaic;//package ai.cogmission.mosaic.refimpl;
 //
 //import ai.cogmission.mosaic.*;
 //import org.junit.Test;

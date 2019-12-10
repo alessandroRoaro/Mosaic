@@ -1,6 +1,4 @@
-package ai.cogmission.mosaic.refimpl;
-
-import ai.cogmission.mosaic.Log;
+package ai.cogmission.mosaic;
 
 import java.io.BufferedReader;
 import java.io.File;

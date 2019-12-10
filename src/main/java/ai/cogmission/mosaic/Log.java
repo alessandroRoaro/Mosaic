@@ -22,7 +22,7 @@ public class Log {
 	}
 
 	
-	private static int logLevel = LogLevel.ERROR.getLevel();
+	private static int logLevel = LogLevel.DEBUG.getLevel();
 
 
 	public static void d (String msg) {

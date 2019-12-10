@@ -1,8 +1,5 @@
-package ai.cogmission.mosaic.refimpl;
+package ai.cogmission.mosaic;
 
-import java.awt.geom.Rectangle2D;
-
-import ai.cogmission.mosaic.*;
 import javafx.application.Platform;
 import javafx.event.EventType;
 import javafx.scene.Group;
@@ -11,9 +8,10 @@ import javafx.scene.effect.DropShadow;
 import javafx.scene.input.DataFormat;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.input.TransferMode;
 import javafx.scene.layout.Region;
 import javafx.scene.paint.Color;
+
+import java.awt.geom.Rectangle2D;
 
 /**
  * An implementation of a container object which is meant to be used
@@ -221,9 +219,9 @@ public class MosaicPane<T extends Node> extends Region {
 	}
 
 	private void checkEnableDragging () {
-		if (content.getChildren().size() > 1) {
+//		if (content.getChildren().size() > 1) {
 			surface.setDragEnabled(true);
-		}
+//		}
 	}
 	
 	public MosaicEngine<T> getEngine() {
@@ -326,9 +324,9 @@ public class MosaicPane<T extends Node> extends Region {
 
 	public interface MosaicPaneListener {
 
-		void nodeEnteredWithDrag (DragEvent evt, String nodeId);
-		void nodeExitedWithDrag (DragEvent evt, String nodeId);
-		void dragDropped (DragEvent evt, String nodeId, double x, double y);
-		void dragExited (MouseEvent evt, String nodeId);
+		void nodeEnteredWithDrag(DragEvent evt, String nodeId);
+		void nodeExitedWithDrag(DragEvent evt, String nodeId);
+		void dragDropped(DragEvent evt, String nodeId, double x, double y);
+		void dragExited(MouseEvent evt, String nodeId);
 	}
 }

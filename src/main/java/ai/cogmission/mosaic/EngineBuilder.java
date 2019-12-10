@@ -1,7 +1,5 @@
 package ai.cogmission.mosaic;
 
-import ai.cogmission.mosaic.refimpl.MosaicPane;
-
 public interface EngineBuilder<T> {
 	/**
 	 * Returns an implementation of {@link MosaicEngine}

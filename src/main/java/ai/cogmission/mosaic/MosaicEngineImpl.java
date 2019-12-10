@@ -1,6 +1,5 @@
-package ai.cogmission.mosaic;
+package ai.cogmission.mosaic;s
 
-import ai.cogmission.mosaic.refimpl.MosaicPane;
 import javafx.scene.Cursor;
 
 import java.awt.geom.Point2D;
@@ -1892,7 +1891,7 @@ class MosaicEngineImpl<T> implements MosaicEngine<T> {
 					selectedElement.r.y = dragPoint.y;
 					LayoutImpl<T> removalSnapshot = surface.getInterimSnapshot();
 
-					if(isDraggingNode) {
+					if(isDraggingNode && removalSnapshot != null) {
 						Node<T> currentDragOver =  getDragOverNode(surface, removalSnapshot, x, y);
 						if(currentDragOver != null) {
 							lastDragOver = currentDragOver;
