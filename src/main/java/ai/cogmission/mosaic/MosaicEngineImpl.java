@@ -1,4 +1,4 @@
-package ai.cogmission.mosaic;s
+package ai.cogmission.mosaic;
 
 import javafx.scene.Cursor;
 
@@ -1891,24 +1891,26 @@ class MosaicEngineImpl<T> implements MosaicEngine<T> {
 					selectedElement.r.y = dragPoint.y;
 					LayoutImpl<T> removalSnapshot = surface.getInterimSnapshot();
 
-					if(isDraggingNode && removalSnapshot != null) {
-						Node<T> currentDragOver =  getDragOverNode(surface, removalSnapshot, x, y);
-						if(currentDragOver != null) {
-							lastDragOver = currentDragOver;
+					if (isDraggingNode && removalSnapshot != null) {
+						if (removalSnapshot != null) {
+							Node<T> currentDragOver = getDragOverNode(surface, removalSnapshot, x, y);
+							if(currentDragOver != null) {
+								lastDragOver = currentDragOver;
 
-							Position p = getDragQuadrant(removalSnapshot.getNode(currentDragOver.stringID).r, x, y);
-							lastQuadrant = p;
+								Position p = getDragQuadrant(removalSnapshot.getNode(currentDragOver.stringID).r, x, y);
+								lastQuadrant = p;
 
-							if (p != null) {
-								Log.d("Drop quadrant: " + lastQuadrant);
-								testDropElement(surface, removalSnapshot, (Node<T>)selectedElement, currentDragOver, p);
+								if (p != null) {
+									Log.d("Drop quadrant: " + lastQuadrant);
+									testDropElement(surface, removalSnapshot, (Node<T>)selectedElement, currentDragOver, p);
+								}
+								else{
+									rejectDropElement(surface, removalSnapshot, (Node<T>)selectedElement, currentDragOver);
+								}
 							}
-							else{
-								rejectDropElement(surface, removalSnapshot, (Node<T>)selectedElement, currentDragOver);
+							else if(lastDragOver != null){
+								rejectDropElement(surface, removalSnapshot, (Node<T>)selectedElement, lastDragOver);
 							}
-						}
-						else if(lastDragOver != null){
-							rejectDropElement(surface, removalSnapshot, (Node<T>)selectedElement, lastDragOver);
 						}
 
 						selectedElement.set(surface, ChangeType.RELOCATE_DRAG_TARGET);

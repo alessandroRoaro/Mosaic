@@ -200,7 +200,7 @@ public class MosaicPaneRefImpl extends Application {
 //		    }catch(Exception e) { e.printStackTrace(); }
 
 			String path = "C:/Users/PC-1-/workspace/Mosaic/out/production/resources/testModel.txt";
-			args = new String[] { "--file="+path, "--surface=test"};
+			args = new String[] { "--file="+path, "--surface=one"};
 		}
 		Log.d(System.getProperty("user.dir"));
         launch(args);
