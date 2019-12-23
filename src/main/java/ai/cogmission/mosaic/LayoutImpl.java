@@ -367,26 +367,7 @@ public class LayoutImpl<T> implements Layout {
 	
 	@Override
 	public Layout addCell(String id, double x, double y, double width, double height, double minW, double maxW, double minH, double maxH) {
-		
-		if(checkIsAdded(id)) {
-			throw new IllegalArgumentException("Attempt to add duplicate cell: " + id);
-		}
-		
-		if(id == null) {
-			throw new IllegalArgumentException("Can't add layout specification with an null id.");
-		}
-		
-		if((x > 1 || y > 1 || width > 1 || height > 1) && isRelative) {
-			throw new IllegalArgumentException("Relative locations represent percentages and must be between 0 and 1.");
-		}
-		
-		if(checkIsAdded(id)) {
-			throw new IllegalArgumentException("Cannot add a specification with the same id twice [" + id + "]");
-		}
-		
-		cells.add(new StringBuilder(id).append(",").append(x).append(",").append(y).append(",").append(width).
-			append(",").append(height).append(",").append(minW).append(",").append(maxW).append(",").append(minH).
-			append(",").append(maxH).toString());
+		addCell(id, x, y, width, height, minW, maxW, minH, maxH, -1, -1);
 		
 		return this;
 	}
@@ -394,10 +375,6 @@ public class LayoutImpl<T> implements Layout {
 	Layout addCell(String id, double x, double y, double width, double height,
 		double minW, double maxW, double minH, double maxH, double hWeight, double vWeight) {
 		
-		if(checkIsAdded(id)) {
-			throw new IllegalArgumentException("Attempt to add duplicate cell: " + id);
-		}
-		
 		if(id == null) {
 			throw new IllegalArgumentException("Can't add layout specification with an null id.");
 		}
@@ -409,10 +386,16 @@ public class LayoutImpl<T> implements Layout {
 		if(checkIsAdded(id)) {
 			throw new IllegalArgumentException("Cannot add a specification with the same id twice [" + id + "]");
 		}
-		
-		cells.add(new StringBuilder(id).append(",").append(x).append(",").append(y).append(",").append(width).
-			append(",").append(height).append(",").append(minW).append(",").append(maxW).append(",").append(minH).
-			append(",").append(maxH).append(",").append(hWeight).append(",").append(vWeight).toString());
+
+		StringBuilder builder = new StringBuilder(id).append(",").append(x).append(",").append(y).append(",").append(width).
+				append(",").append(height).append(",").append(minW).append(",").append(maxW).append(",").append(minH).
+				append(",").append(maxH).append(",");
+
+		if (hWeight >= 0 && vWeight >= 0) {
+			builder = builder.append(hWeight).append(",").append(vWeight);
+		}
+
+		cells.add(builder.toString());
 		
 		return this;
 	}

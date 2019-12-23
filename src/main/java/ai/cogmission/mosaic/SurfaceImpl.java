@@ -925,7 +925,6 @@ public class SurfaceImpl<T> extends SurfacePriviledged<T> {
 		}
 		
 		layout.addCell(id, percentX, percentY, percentWidth, percentHeight, minW, maxW, minH, maxH);
-		
 		layout.put(id, t);
 		
 		return this;

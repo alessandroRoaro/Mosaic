@@ -665,32 +665,39 @@ class MosaicEngineImpl<T> implements MosaicEngine<T> {
 		List<Node<T>> affectedNodes = new ArrayList<>();
 
 		if (target == null) {
-			Divider join = null;
-			Node adjacentNode = null;
+			for (Divider join : source.leadingJoins) {
+				Node adjacentNode = source.nextNodes.get(0);
 
-			if (source.leadingJoins.size() != 0) {
-				join = source.leadingJoins.iterator().next();
-				adjacentNode = source.nextNodes.get(0);
-			}
-			else if (source.trailingJoins.size() != 0) {
-				join = source.trailingJoins.iterator().next();
-				adjacentNode = source.prevNodes.get(0);
-			}
-
-			if (join != null && adjacentNode != null) {
 				if (source.isVertical) {
-					join.r.width += adjacentNode.r.width + source.r.width;
+					double delta = adjacentNode.r.width + source.r.width;
+					join.r.width += delta;
 				}
 				else {
-					join.r.height += adjacentNode.r.height + source.r.height;
+					double delta = adjacentNode.r.height + source.r.height;
+					join.r.height += delta;
+				}
+			}
+
+			for (Divider join : source.trailingJoins) {
+				Node adjacentNode = source.prevNodes.get(0);
+
+				if (source.isVertical) {
+					double delta = adjacentNode.r.width + source.r.width;
+					join.r.x -= delta;
+					join.r.width += delta;
+				}
+				else {
+					double delta = adjacentNode.r.height + source.r.height;
+					join.r.y -= delta;
+					join.r.height += delta;
 				}
 			}
 		}
 		else {
 			//Merging some place in middle, so move target before merging the source into it.
-			if((!target.isVertical && mergeLoc != target.r.y && mergeLoc != source.r.y) || 
+			if ((!target.isVertical && mergeLoc != target.r.y && mergeLoc != source.r.y) ||
 				(target.isVertical && mergeLoc != target.r.x && mergeLoc != source.r.x)) {
-				
+
 				moveDivider(surface, affectedNodes, target, null, 
 					new Point2D.Double(mergeLoc, mergeLoc), surface.getDividerSize());
 			}
@@ -998,7 +1005,7 @@ class MosaicEngineImpl<T> implements MosaicEngine<T> {
             
             ConnectType type = connectAdjacentHorizontalDividers(surface, n);
 			if(type != ConnectType.BOTH) {
-				Divider<T> div = null;
+				Divider<T> div;
 				
 				if(ny > boundaryY && type != ConnectType.TOP) {
 					div = new Divider<T>(nx, ny, nw, false);
@@ -1007,8 +1014,7 @@ class MosaicEngineImpl<T> implements MosaicEngine<T> {
 					n.prevHorizontal = div;
 					horizontalDividers.add(div);
 				}
-				if(ny + nh < surfaceArea.getHeight() - boundaryY &&
-					type != ConnectType.BOTTOM) {
+				if (ny + nh < surfaceArea.getHeight() - boundaryY &&	type != ConnectType.BOTTOM) {
 					div = new Divider<T>(nx, ny + nh, nw, false);
 					div.dividerSize = surface.getDividerSize();
 					div.addPrevious(n);
@@ -1019,7 +1025,8 @@ class MosaicEngineImpl<T> implements MosaicEngine<T> {
 			
 			type = connectAdjacentVerticalDividers(surface, n);
 			if(type != ConnectType.BOTH) {
-				Divider<T> div = null;
+				Divider<T> div;
+
 				if(nx > boundaryX && type != ConnectType.LEFT) {
 					div = new Divider<T>(nx, ny, nh, true);
 					div.dividerSize = surface.getDividerSize();
@@ -1027,8 +1034,7 @@ class MosaicEngineImpl<T> implements MosaicEngine<T> {
 					n.prevVertical = div;
 					verticalDividers.add(div);
 				}
-				if(nx + nw < surfaceArea.getWidth() - boundaryX &&
-					type != ConnectType.RIGHT) {
+				if(nx + nw < surfaceArea.getWidth() - boundaryX && type != ConnectType.RIGHT) {
 					div = new Divider<T>(nx + nw, ny, nh, true);
 					div.dividerSize = surface.getDividerSize();
 					div.addPrevious(n);
@@ -1054,9 +1060,9 @@ class MosaicEngineImpl<T> implements MosaicEngine<T> {
         boolean connectedTop = false;
         boolean connectedBottom = false;
         for(Divider<T> div : surface.getHorizontalDividers()) {
-        	if(n.percentToAproxY(surface.getArea()) >= div.r.y - (tolerance) && 
+        	if (!connectedTop && (n.percentToAproxY(surface.getArea()) >= div.r.y - (tolerance) &&
         		n.percentToAproxY(surfaceArea) <= div.r.y + (tolerance) && 
-        		div.overlapsRelative(n, surfaceArea)) {
+        		div.overlapsRelative(n, surfaceArea))) {
         		
                 div.addNext(n);
                 n.prevHorizontal = div;
@@ -1064,9 +1070,10 @@ class MosaicEngineImpl<T> implements MosaicEngine<T> {
                 div.addPoint(n.percentToAproxX(surfaceArea), 0);								//y is a don't care
                 div.addPoint(n.percentToAproxX(surfaceArea) + n.percentToAproxWidth(surfaceArea), 0);	//y is a don't care
                 connectedTop = true;
-            }else if((n.percentToAproxY(surfaceArea) + n.percentToAproxHeight(surfaceArea)) >= div.r.y - (tolerance) && 
+            }
+        	else if (!connectedBottom && ((n.percentToAproxY(surfaceArea) + n.percentToAproxHeight(surfaceArea)) >= div.r.y - (tolerance) &&
             	(n.percentToAproxY(surfaceArea) + n.percentToAproxHeight(surfaceArea)) <= div.r.y + (tolerance) && 
-            	div.overlapsRelative(n, surfaceArea)) {
+            	div.overlapsRelative(n, surfaceArea))) {
             	
                 div.addPrevious(n);
                 n.nextHorizontal = div;
@@ -1304,7 +1311,7 @@ class MosaicEngineImpl<T> implements MosaicEngine<T> {
     
     void beginDropElement(SurfacePriviledged<T> surface, Node<T> source) {
     	surface.snapshotLayout();
-		
+
 		source.force(surface, ChangeType.MOVE_BEGIN);
 
 		List<Node<T>> affectedNodes = requestRemoveElement(surface, source);
@@ -1546,12 +1553,12 @@ class MosaicEngineImpl<T> implements MosaicEngine<T> {
      */
     private ConnectType getVerticalMergeOptions(Node<T> node) {
     	ConnectType type = ConnectType.NONE;
-    	if(node.prevHorizontal != null && node.prevHorizontal.r.width == node.r.width) {
+    	if (node.prevHorizontal != null && validDividerSizeForNode(node.r.width, node.prevHorizontal.r.width)) {
     		type = ConnectType.TOP;
     	}
     	
-    	if(node.nextHorizontal != null && node.nextHorizontal.r.width == node.r.width){
-    		if(type == ConnectType.TOP) {
+    	if(node.nextHorizontal != null && validDividerSizeForNode(node.r.width, node.nextHorizontal.r.width)){
+    		if (type == ConnectType.TOP && (node.prevHorizontal.prevNodes.size() != 1 || node.prevHorizontal.prevNodes.get(0).r.y != 0)) {
     			type = ConnectType.BOTH;
     		}else{
     			type = ConnectType.BOTTOM;
@@ -1560,6 +1567,11 @@ class MosaicEngineImpl<T> implements MosaicEngine<T> {
     	
     	return type;
     }
+
+
+    private boolean validDividerSizeForNode (double nodeSize, double dividerSize) {
+    	return Math.abs((nodeSize / dividerSize) - 1) <= 0.003;
+	}
     
     /**
      * Returns a ConnectType enum internally overloaded to return a reference to the side
@@ -1638,12 +1650,12 @@ class MosaicEngineImpl<T> implements MosaicEngine<T> {
      */
     private ConnectType getHorizontalMergeOptions(Node<T> node) {
     	ConnectType type = ConnectType.NONE;
-    	if(node.prevVertical != null && node.prevVertical.r.height == node.r.height) {
+    	if(node.prevVertical != null && validDividerSizeForNode(node.r.height, node.prevVertical.r.height)) {
     		type = ConnectType.LEFT;
     	}
     	
-    	if(node.nextVertical != null && node.nextVertical.r.height == node.r.height){
-    		if(type == ConnectType.LEFT) {
+    	if(node.nextVertical != null && validDividerSizeForNode(node.r.height, node.nextVertical.r.height)) {
+    		if(type == ConnectType.LEFT && (node.prevVertical.prevNodes.size() != 1 || node.prevVertical.prevNodes.get(0).r.x != 0)) {
     			type = ConnectType.BOTH;
     		}else{
     			type = ConnectType.RIGHT;
@@ -1884,33 +1896,34 @@ class MosaicEngineImpl<T> implements MosaicEngine<T> {
 		void dragElement(SurfacePriviledged<T> surface, double x, double y) {
 			if(selectedElement == null) return;
 
+			Log.d("Dragging element: " + selectedElement.stringID);
+
 			switch(selectedElement.type) {
 				case NODE: {
 					Point2D.Double dragPoint = moveDragPoint(new Point2D.Double(selectedElement.r.x, selectedElement.r.y), surface.getArea(), x, y, dragXOffset, dragYOffset);
-					selectedElement.r.x = dragPoint.x;
-					selectedElement.r.y = dragPoint.y;
 					LayoutImpl<T> removalSnapshot = surface.getInterimSnapshot();
 
 					if (isDraggingNode && removalSnapshot != null) {
-						if (removalSnapshot != null) {
-							Node<T> currentDragOver = getDragOverNode(surface, removalSnapshot, x, y);
-							if(currentDragOver != null) {
-								lastDragOver = currentDragOver;
+						selectedElement.r.x = dragPoint.x;
+						selectedElement.r.y = dragPoint.y;
 
-								Position p = getDragQuadrant(removalSnapshot.getNode(currentDragOver.stringID).r, x, y);
-								lastQuadrant = p;
+						Node<T> currentDragOver = getDragOverNode(surface, removalSnapshot, x, y);
+						if(currentDragOver != null) {
+							lastDragOver = currentDragOver;
 
-								if (p != null) {
-									Log.d("Drop quadrant: " + lastQuadrant);
-									testDropElement(surface, removalSnapshot, (Node<T>)selectedElement, currentDragOver, p);
-								}
-								else{
-									rejectDropElement(surface, removalSnapshot, (Node<T>)selectedElement, currentDragOver);
-								}
+							Position p = getDragQuadrant(removalSnapshot.getNode(currentDragOver.stringID).r, x, y);
+							lastQuadrant = p;
+
+							if (p != null) {
+								Log.d("Drop quadrant: " + lastQuadrant);
+								testDropElement(surface, removalSnapshot, (Node<T>)selectedElement, currentDragOver, p);
 							}
-							else if(lastDragOver != null){
-								rejectDropElement(surface, removalSnapshot, (Node<T>)selectedElement, lastDragOver);
+							else{
+								rejectDropElement(surface, removalSnapshot, (Node<T>)selectedElement, currentDragOver);
 							}
+						}
+						else if(lastDragOver != null){
+							rejectDropElement(surface, removalSnapshot, (Node<T>)selectedElement, lastDragOver);
 						}
 
 						selectedElement.set(surface, ChangeType.RELOCATE_DRAG_TARGET);
@@ -1918,6 +1931,10 @@ class MosaicEngineImpl<T> implements MosaicEngine<T> {
 					else{
 						surface.setLocked(true);
 						beginDropElement(surface, (Node<T>)selectedElement);
+
+						// set coordinates only after drop has begun and layout snapshot has been taken
+						selectedElement.r.x = dragPoint.x;
+						selectedElement.r.y = dragPoint.y;
 					}
 
 					isDraggingNode = true;
@@ -1950,13 +1967,13 @@ class MosaicEngineImpl<T> implements MosaicEngine<T> {
 		
 		void releaseElement(SurfacePriviledged<T> surface) {
 			if(selectedElement == null) return;
-			
+
 			switch(selectedElement.type) {
 				case NODE: {
 					if(isDraggingNode) {
 						isDraggingNode = false;
 						
-						if(surface.hasValidDrop()) { 
+						if(surface.hasValidDrop()) {
 							commitDropElement(surface, (Node<T>)selectedElement, lastDragOver, lastQuadrant);
 						}else{
 							cancelDropElement(surface, (Node<T>)selectedElement);

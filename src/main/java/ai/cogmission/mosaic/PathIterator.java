@@ -106,8 +106,8 @@ class PathIterator<T> implements PathVisitable<T> {
      */
     void assemblePaths(Node<T> node) {
     	if(horizontalPaths == null) {
-	        horizontalPaths = new ArrayList<HorizontalPath>();
-	        verticalPaths = new ArrayList<VerticalPath>();
+	        horizontalPaths = new ArrayList<>();
+	        verticalPaths = new ArrayList<>();
     	}else{
     		horizontalPaths.clear();
     		verticalPaths.clear();
@@ -157,8 +157,8 @@ class PathIterator<T> implements PathVisitable<T> {
      * @param hPaths	List of {@link HorizontalPath}s
      */
     private void assembleHorizontalPaths(Node<T> curr, List<HorizontalPath> hPaths) {
-    	Divider<T> nextHorizontal = null;
-        if((nextHorizontal = curr.nextHorizontal) != null && nextHorizontal.hasNext()) {
+    	Divider<T> nextHorizontal = curr.nextHorizontal;
+        if (nextHorizontal != null && nextHorizontal.hasNext()) {
         	assembleHorizontalPaths(nextHorizontal.nextNodes().get(0), hPaths);
         }
         
@@ -207,8 +207,8 @@ class PathIterator<T> implements PathVisitable<T> {
      * @param vPaths	List of {@link HorizontalPath}s
      */
     private void assembleVerticalPaths(Node<T> curr, List<VerticalPath> vPaths) {
-        Divider<T> nextVertical = null;
-        if((nextVertical = curr.nextVertical) != null && nextVertical.hasNext()) {
+        Divider<T> nextVertical = curr.nextVertical;
+        if (nextVertical != null && nextVertical.hasNext()) {
         	assembleVerticalPaths(nextVertical.nextNodes().get(0), vPaths);
         }
         

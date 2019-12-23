@@ -537,4 +537,9 @@ class Divider<T> extends Element<T> {
 	
 	/** NOP */
 	void force(SurfacePriviledged<T> s, ChangeType c) {}
+
+
+	public String toString () {
+		return "{ w: " + r.width + ", h: " + r.height + ", x: " + r.x + ", y: " + r.y + "}";
+	}
 }
