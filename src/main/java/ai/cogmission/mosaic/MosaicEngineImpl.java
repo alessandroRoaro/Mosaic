@@ -1366,6 +1366,9 @@ class MosaicEngineImpl<T> implements MosaicEngine<T> {
     
     void rejectDropElement(SurfacePriviledged<T> surface, LayoutImpl<T> interimLayout, Node<T> source, Node<T> target) {
     	Node<T> startNode = surface.getSnapshot().getNode(source.stringID);
+
+    	if (startNode == null) return;
+
     	source.r.setFrame(source.r.x, source.r.y, startNode.r.width, startNode.r.height);
     	source.force(surface, ChangeType.RELOCATE_DRAG_TARGET);
 		source.force(surface, ChangeType.RESIZE_DRAG_TARGET);

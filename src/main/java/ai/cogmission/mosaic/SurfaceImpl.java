@@ -17,7 +17,8 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 @JsonAutoDetect
 public class SurfaceImpl<T> extends SurfacePriviledged<T> {
 	private enum AddMode { UNSET, RELATIVE, ABSOLUTE };
-	
+
+	public static final int DEFAULT_DIVIDER_SIZE = 3;
 	
 	/** Flag indicating first layout run */
     private boolean isInit = true;
@@ -31,7 +32,7 @@ public class SurfaceImpl<T> extends SurfacePriviledged<T> {
     
     /** the size opposite to its direction */
     @JsonProperty
-    private double dividerSize = 3;
+    private double dividerSize = DEFAULT_DIVIDER_SIZE;
     
     /** Flag for offset values being added to x, y */
     @JsonProperty

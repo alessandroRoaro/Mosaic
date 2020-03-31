@@ -7,6 +7,7 @@ import javafx.scene.Node;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.input.DataFormat;
 import javafx.scene.input.DragEvent;
+import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Region;
 import javafx.scene.paint.Color;
@@ -84,6 +85,8 @@ public class MosaicPane<T extends Node> extends Region {
 		});
         
         addEventHandler(MouseEvent.ANY, evt -> {
+        	if (evt.getButton() != MouseButton.PRIMARY) return;
+
 			EventType type = evt.getEventType();
 			if(type == MouseEvent.MOUSE_PRESSED) {
 				this.surface.mousePressed(evt.getX(), evt.getY());
