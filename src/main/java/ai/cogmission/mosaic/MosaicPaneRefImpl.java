@@ -2,6 +2,8 @@ package ai.cogmission.mosaic;
 
 
 import javafx.application.Application;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Pos;
@@ -22,6 +24,8 @@ import javafx.stage.StageStyle;
 
 import java.util.Map;
 import java.util.Random;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class MosaicPaneRefImpl extends Application {
 	/** Mapping of element id's to labels for later reference when serializing */
@@ -89,8 +93,12 @@ public class MosaicPaneRefImpl extends Application {
 		Pane mosaicContainer = new Pane();
 		mosaicContainer.setPrefWidth(1200);
 		mosaicContainer.setPrefHeight(900);
-		mosaicContainer.setLayoutX(500);
 		root.getChildren().add(mosaicContainer);
+
+		AnchorPane.setLeftAnchor(mosaicContainer, 500.);
+		AnchorPane.setBottomAnchor(mosaicContainer, 12.);
+		AnchorPane.setTopAnchor(mosaicContainer, 12.);
+		AnchorPane.setRightAnchor(mosaicContainer, 12.);
 
 		createMosaic(mosaicContainer, model);
 
@@ -102,6 +110,30 @@ public class MosaicPaneRefImpl extends Application {
 		root.getChildren().add(againBtn);
 
 		AnchorPane.setTopAnchor(againBtn, 200.0);
+
+		// resize mosaic container on stage resize, only when resizing is "done"
+		ChangeListener<Number> listener = new ChangeListener<>() {
+			Timer timer = new Timer(); // uses a timer to call your resize method
+			TimerTask task = null; // task to execute after defined delay
+			long delayTime = 200; // delay that has to pass in order to consider an operation done
+
+			public void changed(ObservableValue<? extends Number> observable, Number oldValue, final Number newValue) {
+				if (task != null) {
+					task.cancel(); // cancel already running task, we have a new size to consider
+				}
+
+				task = new TimerTask() {
+					public void run() {
+						mosaicPane.updateLayout(mosaicContainer.getWidth(), mosaicContainer.getHeight());
+					}
+				};
+				timer.schedule(task, delayTime);
+			}
+		};
+
+		// finally we have to register the listener
+		stage.widthProperty().addListener(listener);
+		stage.heightProperty().addListener(listener);
 
 		Scene scene = new Scene(root, 1600, 900);
 	    stage.setTitle("Mosaic Layout Engine Demo (JavaFX)");
@@ -115,6 +147,10 @@ public class MosaicPaneRefImpl extends Application {
 		mosaicPane = new MosaicPane<>();
 		mosaicPane.setNodeMinHeight(50);
 		mosaicPane.setNodeMinWidth(150);
+
+		container.widthProperty().addListener((obs, oldVal, newVal) -> {
+			mosaicPane.setPrefWidth(newVal.doubleValue());
+		});
 
 		int i = 0;
 

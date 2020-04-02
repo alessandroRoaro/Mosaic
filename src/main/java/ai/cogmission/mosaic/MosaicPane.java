@@ -77,23 +77,17 @@ public class MosaicPane<T extends Node> extends Region {
 			this.surface = surface;
 			this.content = group;
 		}
-		
-		layoutBoundsProperty().addListener((arg0, arg1, arg2) -> {
-			if(arg2.getWidth() == 0 || arg2.getHeight() == 0) return;
-			this.surface.setArea(new Rectangle2D.Double(0, 0, arg2.getWidth(), arg2.getHeight()));
-			this.surface.requestLayout();
-		});
         
         addEventHandler(MouseEvent.ANY, evt -> {
-        	if (evt.getButton() != MouseButton.PRIMARY) return;
-
 			EventType type = evt.getEventType();
-			if(type == MouseEvent.MOUSE_PRESSED) {
-				this.surface.mousePressed(evt.getX(), evt.getY());
-				hasDraggedNodeOutside = false;
+			if (type == MouseEvent.MOUSE_PRESSED) {
+				if (evt.getButton() == MouseButton.PRIMARY) {
+					this.surface.mousePressed(evt.getX(), evt.getY());
+					hasDraggedNodeOutside = false;
+				}
 			}
 			else if(type == MouseEvent.MOUSE_DRAGGED) {
-				if (!hasDraggedNodeOutside) { // if node has already been drag outside, don't take care of it anymore
+				if (!hasDraggedNodeOutside && evt.getButton() == MouseButton.PRIMARY) { // if node has already been drag outside, don't take care of it anymore
 					if (this.getLayoutBounds().contains(evt.getX(), evt.getY())) {
 						this.surface.mouseDragged(evt.getX(), evt.getY());
 					}
@@ -105,7 +99,7 @@ public class MosaicPane<T extends Node> extends Region {
 					}
 				}
 			}
-			else if(type == MouseEvent.MOUSE_RELEASED) {
+			else if(type == MouseEvent.MOUSE_RELEASED && evt.getButton() == MouseButton.PRIMARY) {
 				this.surface.mouseReleased();
 			}
 			else if (type == MouseEvent.MOUSE_MOVED) {
@@ -172,6 +166,12 @@ public class MosaicPane<T extends Node> extends Region {
 			currentNodeIdDraggedOverFromOutside = null;
 			dragEvent.consume();
 		});
+	}
+
+
+	public void updateLayout (double width, double height) {
+		surface.setArea(new Rectangle2D.Double(0, 0, width, height));
+		surface.requestLayout();
 	}
 
 	
