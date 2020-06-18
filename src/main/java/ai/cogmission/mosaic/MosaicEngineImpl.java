@@ -1379,7 +1379,7 @@ class MosaicEngineImpl<T> implements MosaicEngine<T> {
     	surface.setHasValidDrop(false);
     	
     	for(Node<T> n : surface.getNodeList()) {
-    		if (n.r == null || interimLayout == null) continue;
+    		if (n.r == null || interimLayout.getNode(n.stringID) == null) continue;
 
     		n.r.setFrame(interimLayout.getNode(n.stringID).r);
 	    	n.force(surface, ChangeType.RESIZE_RELOCATE);
@@ -1422,7 +1422,13 @@ class MosaicEngineImpl<T> implements MosaicEngine<T> {
 		
 	    //requestLayout(surface);
 	    for(Node<T> n : surface.getNodeList()) {
-		    ((LayoutImpl<T>)surface.getLayout()).getNode(n.stringID).force(surface, ChangeType.RESIZE_RELOCATE);
+	    	Node node = ((LayoutImpl<T>)surface.getLayout()).getNode(n.stringID);
+	    	if (mosaicPane.getChildrenCount() == 1) {
+	    		// ugly fix for bug
+	    		node.r.x = 0;
+	    		node.r.y = 0;
+			}
+		    node.force(surface, ChangeType.RESIZE_RELOCATE);
 	    }
 	    
 	    source.force(surface, ChangeType.MOVE_END);
